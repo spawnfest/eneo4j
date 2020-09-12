@@ -9,17 +9,28 @@ jobs:
       matrix:
         erl_vsn: [21.3, 22.1, 23.0.3]
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+    - uses: gleam-lang/setup-erlang@v1.1.0
 
-      - uses: gleam-lang/setup-erlang@v1.1.0
-        with:
-          otp-version: ${{ matrix.erl_vsn }}
+      with:
+        otp-version: ${{ matrix.erl_vsn }}
 
-      - name: Compile
-        run: make compile
+    - name: Compile
+      run: make compile
 
-      - name: Check types
-        run: make run_type_checks
+    - name: Check types
+      run: make run_type_checks
 
-      - name: Run tests
-        run: make run_tests
+    - name: Run tests
+      run: make run_tests
+
+    - name: Run coverage
+      run: |
+          sudo pip install codecov && codecov
+          make report_cover
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./codecov.json

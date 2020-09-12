@@ -17,3 +17,6 @@ run_tests:
 
 show_cover:
 	rebar3 cover
+
+report_cover:
+	rebar3 codecov analyze
