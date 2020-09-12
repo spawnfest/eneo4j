@@ -9,7 +9,8 @@
     public_key,
     crypto,
     ssl,
-    hackney
+    hackney,
+    worker_pool
    ]},
   {env,[]},
   {modules, []},

@@ -4,6 +4,8 @@
 
 -compile({inline, [build_content_headers/0]}).
 
+-export_type([eneo4j_worker_config/0]).
+
 -type start_error() :: {already_started, pid()} | term().
 -type start_result() :: {ok, pid()} | ignore | {error, start_error()}.
 -type url() :: string().

@@ -12,11 +12,10 @@
 -define(Neo4jPassword, "test").
 
 init_per_suite(Config) ->
-    application:ensure_all_started(eneo4j),
+    application:ensure_all_started(hackney),
     Config.
 
 end_per_suite(_Config) ->
-    application:stop(eneo4j),
     ok.
 
 init_per_group(no_authentication, Config) ->
