@@ -29,11 +29,11 @@ get_and_validate_workers_config() ->
     Eneo4jWorkerConfig = persistent_term:get(eneo4j_worker_config, undefined),
     validate_workers_config(Eneo4jWorkerConfig).
 
-validate_workers_config(WorkerConfig = #{url := Url, db := DB}) when is_list(Url), is_list(DB) ->
-    WorkerConfig;
 validate_workers_config(
     WorkerConfig = #{url := Url, db := DB, user := User, password := Password}
 ) when is_list(Url), is_list(DB), is_list(User), is_list(Password) ->
+    WorkerConfig;
+validate_workers_config(WorkerConfig = #{url := Url, db := DB}) when is_list(Url), is_list(DB) ->
     WorkerConfig;
 validate_workers_config(undefined) ->
     {error, {eneo4j_worker_config, undefined}};

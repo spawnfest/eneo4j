@@ -60,7 +60,8 @@ groups() ->
 
 tests() ->
     [
-        discovery_api_returns_correct_map
+        discovery_api_returns_correct_map,
+        begin_and_commit_transaction
     ].
 
 discovery_api_returns_correct_map(_Config) ->
@@ -70,4 +71,15 @@ discovery_api_returns_correct_map(_Config) ->
             <<"neo4j_version">> := <<"4.1.1">>
         }},
         eneo4j:discvery_api()
+    ).
+
+begin_and_commit_transaction(_Config) ->
+    Query1 = <<"MATCH (n) RETURN n">>,
+    Statement1 = eneo4j:build_statement(Query1, #{}),
+    Query2 = <<"MATCH (n) WHERE n.name = $name RETURN n">>,
+    Params2 = #{<<"name">> => <<"Andy">>},
+    Statement2 = eneo4j:build_statement(Query2, Params2, true),
+    ?assertMatch(
+        {ok, _, #{<<"errors">> := []}},
+        eneo4j:begin_and_commit_transaction([Statement1, Statement2])
     ).
