@@ -1,20 +1,26 @@
 name: Erlang CI
 
-on:
-  push
+on: push
 
 jobs:
-
   build:
-
-    runs-on: ubuntu-latest
-
-    container:
-      image: erlang:22.0.7
-
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+        erl_vsn: [21.2, 22.1, 23.0]
     steps:
-    - uses: actions/checkout@v2
-    - name: Compile
-      run: rebar3 compile
-    - name: Run tests
-      run: rebar3 do eunit, ct
+      - uses: actions/checkout@v2
+
+      - uses: gleam-lang/setup-erlang@v1.1.0
+        with:
+          otp-version: ${{ matrix.erl_vsn }}
+
+      - name: Compile
+        run: make compile
+
+      - name: Check types
+        run: make run_type_checks
+
+      - name: Run tests
+        run: make run_tests

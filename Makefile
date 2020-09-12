@@ -1,4 +1,6 @@
-all: compile format run_type_checks run_tests show_cover
+all: all_checks format show_cover
+
+all_checks: compile run_type_checks run_tests
 
 compile:
 	rebar3 compile
