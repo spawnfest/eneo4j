@@ -1,7 +1,10 @@
-all: compile run_type_checks run_tests show_cover
+all: compile format run_type_checks run_tests show_cover
 
 compile:
 	rebar3 compile
+
+format:
+	rebar3 fmt
 
 run_type_checks:
 	rebar3 gradualizer
