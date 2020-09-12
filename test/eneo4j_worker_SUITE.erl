@@ -57,11 +57,11 @@ init_per_testcase(when_discovering_not_existing_address_econnrefused_is_returned
 init_per_testcase(when_adding_node_transaction_is_successfully_committed_without_params, Config) ->
     Query = <<"MATCH (n) WHERE n.name = 'Andy' RETURN n">>,
     Params = #{},
-    [{cypher_query, Query}, {Params} | Config];
+    [{cypher_query, Query}, {query_params, Params} | Config];
 init_per_testcase(when_adding_node_transaction_is_successfully_committed_with_params, Config) ->
     Query = <<"MATCH (n) WHERE n.name = $name RETURN n">>,
     Params = #{<<"name">> => <<"Andy">>},
-    [{cypher_query, Query}, {Params} | Config];
+    [{cypher_query, Query}, {query_params, Params} | Config];
 init_per_testcase(_Case, Config) ->
     Config.
 
@@ -130,7 +130,7 @@ when_adding_node_transaction_is_successfully_committed(Config) ->
 
     Statement = eneo4j_worker:build_statement(Query, Params),
     ?assertMatch(
-        {ok, _, #{}},
+        {ok, _, #{<<"errors">> := []}},
         gen_server:call(Worker, {begin_and_commit_transaction, [Statement]})
     ),
     Config.
@@ -143,3 +143,11 @@ when_unexpected_message_is_send_it_is_logged(Config) ->
     timer:sleep(100),
     ?assert(is_process_alive(Worker)),
     Config.
+
+% Open -> commit
+% Open -> run_non_empty -> commit
+% Open -> run_non_empty -> run_non_empty -> commit
+
+% Open -> rollback
+% Open -> run_non_empty -> rollback
+% Open -> run_non_empty -> run_non_empty -> rollback

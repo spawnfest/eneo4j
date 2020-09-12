@@ -25,17 +25,21 @@
     password => string()
 }.
 
--type cypher_query() :: string().
--type query_params() :: #{string() => any()}.
--type statement() :: #{statement := cypher_query(), parameters := query_params()}.
+-type cypher_query() :: binary().
+-type query_params() :: #{atom() => any()}.
+-type statement() :: #{
+    statement := cypher_query(),
+    parameters := query_params(),
+    includeStats => boolean()
+}.
+
 -type statements() :: [statement()].
 -type eneo4j_call() :: discovery_api | {begin_and_commit_transaction, statements()}.
-
 -type response() :: {ok, pos_integer(), map()} | {error, Reason :: any()}.
 
 -export([start_link/1]).
 -export([init/1, handle_call/3, handle_info/2]).
--export([build_statement/2]).
+-export([build_statement/2, build_statement/3]).
 
 -spec start_link(eneo4j_worker_config()) -> start_result().
 start_link(Args) ->
@@ -66,9 +70,14 @@ handle_info(Info, State) ->
 
 -spec build_statement(cypher_query(), query_params()) -> statement().
 build_statement(Query, Params) ->
+    build_statement(Query, Params, false).
+
+-spec build_statement(cypher_query(), query_params(), boolean()) -> statement().
+build_statement(Query, Params, IncludeStats) ->
     #{
         statement => Query,
-        parameters => Params
+        parameters => Params,
+        includeStats => IncludeStats
     }.
 
 % Private functions
@@ -90,9 +99,11 @@ build_auth_header(User, Password) ->
     Val = base64:encode(User ++ ":" ++ Password),
     {<<"Authorization">>, <<Basic/binary, Val/binary>>}.
 
-build_request(Statements) ->
+build_request(Statements) when is_list(Statements) ->
     RawRequest = #{statements => Statements},
-    jiffy:encode(RawRequest).
+    JSON = jiffy:encode(RawRequest),
+    logger:error("~p", [JSON]),
+    JSON.
 
 build_url(begin_and_commit_transaction, #{url := Url, db := DB}) ->
     Url ++ "/db/" ++ DB ++ "/tx/commit".
