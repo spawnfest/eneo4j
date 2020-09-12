@@ -34,7 +34,7 @@
 -type response() :: {ok, pos_integer(), map()} | {error, Reason :: any()}.
 
 -export([start_link/1]).
--export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2]).
+-export([init/1, handle_call/3, handle_info/2]).
 -export([build_statement/2]).
 
 -spec start_link(eneo4j_worker_config()) -> start_result().
@@ -60,14 +60,8 @@ handle_call({begin_and_commit_transaction, Statements}, _From, State = #{headers
     Response = send_request_and_process_response(post, FullUrl, Headers, Request),
     {reply, Response, State}.
 
-handle_cast(_Msg, State) ->
-    {noreply, State}.
-
 handle_info(_Info, State) ->
     {noreply, State}.
-
-terminate(_Reason, _State) ->
-    ok.
 
 -spec build_statement(cypher_query(), query_params()) -> statement().
 build_statement(Query, Params) ->

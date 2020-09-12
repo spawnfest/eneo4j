@@ -70,8 +70,8 @@ end_per_testcase(_Case, _Config) ->
 
 groups() ->
     [
-        {no_authentication, [], common_test_cases()},
-        {with_authentication, [], common_test_cases()}
+        {no_authentication, [parallel], common_test_cases()},
+        {with_authentication, [parallel], common_test_cases()}
     ].
 
 all() ->
