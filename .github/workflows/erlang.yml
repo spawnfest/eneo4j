@@ -15,6 +15,9 @@ jobs:
       with:
         otp-version: ${{ matrix.erl_vsn }}
 
+    - name: Setup DB
+      run: make setup_db
+
     - name: Compile
       run: make compile
 

@@ -1,6 +1,9 @@
-all: all_checks format show_cover
+all: setup_db all_checks format show_cover report_cover
 
 all_checks: compile run_type_checks run_tests
+
+setup_db:
+	docker-compose up -d
 
 compile:
 	rebar3 compile
