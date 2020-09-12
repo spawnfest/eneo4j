@@ -60,7 +60,8 @@ handle_call({begin_and_commit_transaction, Statements}, _From, State = #{headers
     Response = send_request_and_process_response(post, FullUrl, Headers, Request),
     {reply, Response, State}.
 
-handle_info(_Info, State) ->
+handle_info(Info, State) ->
+    logger:warning("Unexpected message ~p", [Info]),
     {noreply, State}.
 
 -spec build_statement(cypher_query(), query_params()) -> statement().
