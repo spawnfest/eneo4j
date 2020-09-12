@@ -14,6 +14,7 @@ init_per_suite(Config) ->
     Config.
 
 end_per_suite(_Config) ->
+    application:stop(eneo4j),
     ok.
 
 init_per_group(no_authentication, Config) ->
