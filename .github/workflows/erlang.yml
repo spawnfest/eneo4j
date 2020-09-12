@@ -4,11 +4,10 @@ on: push
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
-        erl_vsn: [21.2, 22.1, 23.0]
+        erl_vsn: [21.3, 22.1, 23.0.3]
     steps:
       - uses: actions/checkout@v2
 
