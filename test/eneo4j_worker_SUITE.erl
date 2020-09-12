@@ -6,6 +6,7 @@
 -compile(export_all).
 
 -define(AuthNeo4jUrl, "http://localhost:7474").
+-define(NoAuthNeo4jUrl, "http://localhost:7470").
 -define(Neo4jUser, "neo4j").
 -define(Neo4jPassword, "test").
 
@@ -18,7 +19,7 @@ end_per_suite(_Config) ->
     ok.
 
 init_per_group(no_authentication, Config) ->
-    [{worker_config, #{url => ?AuthNeo4jUrl}} | Config];
+    [{worker_config, #{url => ?NoAuthNeo4jUrl}} | Config];
 init_per_group(with_authentication, Config) ->
     [
         {worker_config, #{url => ?AuthNeo4jUrl, user => ?Neo4jUser, password => ?Neo4jPassword}}
@@ -60,6 +61,7 @@ common_test_cases() ->
 %% TEST CASES
 %%--------------------------------------------------------------------
 
+% Discovery API
 when_discovering_not_existing_address_econnrefused_is_returned(Config) ->
     WorkerConfig = proplists:get_value(worker_config, Config),
     {ok, Pid} = eneo4j_worker:start_link(WorkerConfig),

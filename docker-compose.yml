@@ -15,3 +15,18 @@ services:
       interval: 1m30s
       timeout: 10s
       retries: 3
+
+  neo4j_no_auth:
+    image: neo4j:4.1.1
+    hostname: neo4j_no_auth
+    container_name: neo4j_no_auth
+    ports:
+      - "7470:7474"
+      - "7680:7687"
+    environment:
+      NEO4J_AUTH: none
+    healthcheck:
+      test: ["CMD-SHELL", "/var/lib/neo4j/bin/neo4j status"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
