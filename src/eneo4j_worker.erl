@@ -103,9 +103,7 @@ build_auth_header(User, Password) ->
 
 build_request(Statements) when is_list(Statements) ->
     RawRequest = #{statements => Statements},
-    JSON = jiffy:encode(RawRequest),
-    logger:error("~p", [JSON]),
-    JSON.
+    jiffy:encode(RawRequest).
 
 build_url(begin_and_commit_transaction, #{url := Url, db := DB}) ->
     Url ++ "/db/" ++ DB ++ "/tx/commit".

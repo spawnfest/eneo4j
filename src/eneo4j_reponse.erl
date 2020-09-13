@@ -4,5 +4,3 @@
 
 is_successful(#{<<"errors">> := []}) -> true;
 is_successful(#{<<"errors">> := Errors}) -> {error, Errors}.
-
-% eof
