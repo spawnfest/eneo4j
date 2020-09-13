@@ -124,25 +124,28 @@ Statement = eneo4j:build_statement(Query, Params),
 eneo4j:begin_and_commit_transaction([Statement]).
 
 % Returns:
-#{
-  <<"errors">> => [],
-  <<"results">> => [
-    #{
-      <<"columns">> => [<<"n">>],
-      <<"data">> => [
-        #{<<"meta">> => [
-          #{<<"deleted">> => false,
-          <<"id">> => 3,
-          <<"type">> => <<"node">>}],
-          <<"row">> => [
-            #{<<"name">> => <<"Andy">>,
-              <<"title">> => <<"Developer">>
-            }
-          ]
-        }
-      ]
-    }
-  ]
+{
+  ok,
+  #{
+    <<"errors">> => [],
+    <<"results">> => [
+      #{
+        <<"columns">> => [<<"n">>],
+        <<"data">> => [
+          #{<<"meta">> => [
+            #{<<"deleted">> => false,
+            <<"id">> => 3,
+            <<"type">> => <<"node">>}],
+            <<"row">> => [
+              #{<<"name">> => <<"Andy">>,
+                <<"title">> => <<"Developer">>
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
@@ -154,7 +157,7 @@ Let's consider an error in a query:
 % Let's consider creating a query with an error:
   Query = <<"CREATEXD (n:Person);">>,
   Statement = eneo4j:build_statement(Query, #{}, true),
-  ?assertMatch(ok, eneo4j:begin_and_commit_transaction[Statement])).
+  eneo4j:begin_and_commit_transaction[Statement]).
 
 % It returns full error to let you fix it:
 {error,[
