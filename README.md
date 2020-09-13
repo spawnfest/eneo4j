@@ -67,7 +67,8 @@ Executing this test on my laptop gives following result:
 
 ## Test
 
-To setup databases for testing purposes run `make setup_db`.
+To set up databases for testing purposes run `make setup_db`.
+It may take up to a minute for neo4j to set up, if you set it up for the first time, depending on your environment's performance you might need to wait for it to run properly, therefore if you get timeouts in the tests just rerun them after about a minute.
 To run the tests run `make precommit`.
 For further details see Makefile.
 
