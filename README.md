@@ -66,60 +66,19 @@ It returns basic information about the requested neo4j instance.
 eneo4j:discvery_api().
 
 % Result is:
-{ok, 200,
-  #{
-    <<"bolt_direct">> => <<"bolt://localhost:7687">>,
-    <<"bolt_routing">> => <<"neo4j://localhost:7687">>,
-    <<"neo4j_edition">> => <<"community">>,
-    <<"neo4j_version">> => <<"4.1.1">>,
-    <<"transaction">> =><<"http://localhost:7470/db/{databaseName}/tx">>
-  }
+#{
+  <<"bolt_direct">> => <<"bolt://localhost:7687">>,
+  <<"bolt_routing">> => <<"neo4j://localhost:7687">>,
+  <<"neo4j_edition">> => <<"community">>,
+  <<"neo4j_version">> => <<"4.1.1">>,
+  <<"transaction">> =><<"http://localhost:7470/db{databaseName}/tx">>
 }
 ```
 
 ### [Begin and commit a transaction](https://neo4j.com/docs/http-api/current/actions/begin-and-commit-a-transaction-in-one-request/)
 
-Let's say we have added a node to the database:
-
-```cypher
-CREATE (n:Person { name: 'Andy', title: 'Developer' });
-```
-
-And we just want to get all the information about Andy's node we can:
-
-```erlang
-Query = <<"MATCH (n) WHERE n.name = $name RETURN n">>,
-Params = #{<<"name">> => <<"Andy">>},
-Statement = eneo4j:build_statement(Query, Params),
-eneo4j:begin_and_commit_transaction([Statement]).
-
-{
-  ok,
-  200,
-  #{
-    <<"errors">> => [],
-    <<"results">> => [
-      #{
-        <<"columns">> => [<<"n">>],
-        <<"data">> => [
-          #{<<"meta">> => [
-            #{<<"deleted">> => false,
-            <<"id">> => 3,
-            <<"type">> => <<"node">>}],
-            <<"row">> => [
-              #{<<"name">> => <<"Andy">>,
-                <<"title">> => <<"Developer">>
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
 To query neo4j:
+
 ```erlang
 % Write your query using cypher:
 Query = <<"CREATE (n:Person { name: $name, title: $title });">>,
@@ -146,5 +105,63 @@ Statement2 = eneo4j:build_statement(Query, ParamsJohn, true),
 eneo4j:begin_and_commit_transaction([Statement, Statement2]).
 ```
 
+#### Successful querying example
 
+
+Let's say we have added a node to the database:
+
+```cypher
+CREATE (n:Person { name: 'Andy', title: 'Developer' });
+```
+
+And we just want to get all the information about Andy's node we can:
+
+```erlang
+% Executing following code:
+Query = <<"MATCH (n) WHERE n.name = $name RETURN n">>,
+Params = #{<<"name">> => <<"Andy">>},
+Statement = eneo4j:build_statement(Query, Params),
+eneo4j:begin_and_commit_transaction([Statement]).
+
+% Returns:
+#{
+  <<"errors">> => [],
+  <<"results">> => [
+    #{
+      <<"columns">> => [<<"n">>],
+      <<"data">> => [
+        #{<<"meta">> => [
+          #{<<"deleted">> => false,
+          <<"id">> => 3,
+          <<"type">> => <<"node">>}],
+          <<"row">> => [
+            #{<<"name">> => <<"Andy">>,
+              <<"title">> => <<"Developer">>
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+#### Error querying example
+
+Let's consider an error in a query:
+
+```erlang
+% Let's consider creating a query with an error:
+  Query = <<"CREATEXD (n:Person);">>,
+  Statement = eneo4j:build_statement(Query, #{}, true),
+  ?assertMatch(ok, eneo4j:begin_and_commit_transaction[Statement])).
+
+% It returns full error to let you fix it:
+{error,[
+  #{
+    <<"code">> => <<"Neo.ClientError.Statement.SyntaxError">>,
+    <<"message">> => <<"Invalid input 'X' (line 1, column 7 (offset: 6))\n\"CREATEXD (n:Person);\"\n       ^">>
+  }
+]}
+```
 <!-- EOF -->
