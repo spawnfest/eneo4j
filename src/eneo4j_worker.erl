@@ -36,7 +36,8 @@
 }.
 
 -type statements() :: [statement()].
--type eneo4j_call() :: discovery_api | {begin_and_commit_transaction, statements()}.
+-type request_type() :: begin_and_commit_transaction | begin_transaction.
+-type eneo4j_call() :: discovery_api | {request_type(), statements()}.
 -type response() :: {ok, pos_integer(), map()} | {error, Reason :: any()}.
 
 -export([start_link/1]).
@@ -60,9 +61,9 @@ init(State = #{}) ->
 handle_call(discovery_api, _From, State = #{url := Url, headers := Headers}) ->
     Response = send_request_and_process_response(get, Url, Headers, <<"">>),
     {reply, Response, State};
-handle_call({begin_and_commit_transaction, Statements}, _From, State = #{headers := Headers}) ->
+handle_call({RequestType, Statements}, _From, State = #{headers := Headers}) ->
     Request = build_request(Statements),
-    FullUrl = build_url(begin_and_commit_transaction, State),
+    FullUrl = build_url(RequestType, State),
     Response = send_request_and_process_response(post, FullUrl, Headers, Request),
     {reply, Response, State}.
 
@@ -105,6 +106,10 @@ build_request(Statements) when is_list(Statements) ->
     RawRequest = #{statements => Statements},
     jiffy:encode(RawRequest).
 
+build_url({commit_transaction, CommitLink}, _) ->
+    binary:bin_to_list(CommitLink);
+build_url(begin_transaction, #{url := Url, db := DB}) ->
+    Url ++ "/db/" ++ DB ++ "/tx";
 build_url(begin_and_commit_transaction, #{url := Url, db := DB}) ->
     Url ++ "/db/" ++ DB ++ "/tx/commit".
 

@@ -63,7 +63,10 @@ tests() ->
         discovery_api_returns_correct_map,
         begin_and_commit_transaction,
         when_nodes_are_create_they_are_can_be_queried,
-        when_error_is_returned_it_is_reported
+        when_error_is_returned_it_is_reported,
+        begin_and_then_commit_a_transaction_in_separate_requests,
+        fail_on_error_begin_a_transaction_in_separate_requests,
+        begin_and_then_fail_on_commit_a_transaction_in_separate_requests
     ].
 
 discovery_api_returns_correct_map(_Config) ->
@@ -82,7 +85,7 @@ begin_and_commit_transaction(_Config) ->
     Params2 = #{<<"name">> => <<"Andy">>},
     Statement2 = eneo4j:build_statement(Query2, Params2, true),
     ?assertMatch(
-        #{<<"results">> := _},
+        {ok, #{<<"results">> := _}},
         eneo4j:begin_and_commit_transaction([Statement1, Statement2])
     ).
 
@@ -109,12 +112,12 @@ when_nodes_are_create_they_are_can_be_queried(_Config) ->
     Statement2 = eneo4j:build_statement(Query, ParamsJohn, true),
 
     % Lets execute those queries:
-    #{<<"results">> := _} = eneo4j:begin_and_commit_transaction([Statement, Statement2]),
+    {ok, #{<<"results">> := _}} = eneo4j:begin_and_commit_transaction([Statement, Statement2]),
 
     %Lets now try getting Persons names
     QueryGetPersonsNames = <<"MATCH (n:Person) RETURN n.name">>,
     Statement3 = eneo4j:build_statement(QueryGetPersonsNames, #{}),
-    #{<<"results">> := _} = eneo4j:begin_and_commit_transaction([
+    {ok, #{<<"results">> := _}} = eneo4j:begin_and_commit_transaction([
         Statement3
     ]).
 
@@ -122,3 +125,29 @@ when_error_is_returned_it_is_reported(_Config) ->
     Query = <<"CREATEXD (n:Person);">>,
     Statement = eneo4j:build_statement(Query, #{}, true),
     ?assertMatch({error, _}, eneo4j:begin_and_commit_transaction([Statement])).
+
+begin_and_then_commit_a_transaction_in_separate_requests(_Config) ->
+    QueryGetPersonsNames = <<"MATCH (n:Person) RETURN n.name">>,
+    Statement = eneo4j:build_statement(QueryGetPersonsNames, #{}),
+    {ok, Response} = eneo4j:begin_transaction([Statement]),
+    {ok, CommitLink} = eneo4j_reponse:get_commit_transaction_link(Response),
+    ?assertMatch({ok, _}, eneo4j:commit_transaction([], CommitLink)).
+
+fail_on_error_begin_a_transaction_in_separate_requests(_Config) ->
+    ErrorQuery = <<"MATCHXD (n:Person) RETURN n.name">>,
+    ErrorStatement = eneo4j:build_statement(ErrorQuery, #{}),
+    ErrorResponse = eneo4j:begin_transaction([ErrorStatement]),
+    ?assertMatch({error, _}, ErrorResponse),
+    ?assertEqual(ErrorResponse, eneo4j_reponse:get_commit_transaction_link(ErrorResponse)).
+
+begin_and_then_fail_on_commit_a_transaction_in_separate_requests(_Config) ->
+    QueryGetPersonsNames = <<"MATCH (n:Person) RETURN n.name">>,
+    Statement = eneo4j:build_statement(QueryGetPersonsNames, #{}),
+    {ok, Response} = eneo4j:begin_transaction([Statement]),
+    {ok, CommitLink} = eneo4j_reponse:get_commit_transaction_link(Response),
+
+    ErrorQuery = <<"MATCHXD (n:Person) RETURN n.name">>,
+    ErrorStatement = eneo4j:build_statement(ErrorQuery, #{}),
+    ?assertMatch({error, _}, eneo4j:commit_transaction([ErrorStatement], CommitLink)).
+
+% eof
