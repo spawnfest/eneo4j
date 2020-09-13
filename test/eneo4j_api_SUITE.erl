@@ -67,7 +67,8 @@ tests() ->
         begin_and_then_commit_a_transaction_in_separate_requests,
         fail_on_error_begin_a_transaction_in_separate_requests,
         begin_and_then_fail_on_commit_a_transaction_in_separate_requests,
-        begin_then_run_then_commit_a_transaction_in_separate_requests
+        begin_then_run_then_commit_a_transaction_in_separate_requests,
+        begin_then_run_several_times_then_commit_a_transaction_in_separate_requests
     ].
 
 discovery_api_returns_correct_map(_Config) ->
@@ -160,6 +161,33 @@ begin_then_run_then_commit_a_transaction_in_separate_requests(_Config) ->
     {ok, RunResponse} = eneo4j:run_queries_inside_transaction([Statement], RunLink),
 
     {ok, CommitLink} = eneo4j_reponse:get_commit_transaction_link(RunResponse),
+    ?assertMatch({ok, _}, eneo4j:commit_transaction([], CommitLink)).
+
+begin_then_run_several_times_then_commit_a_transaction_in_separate_requests(_Config) ->
+    QueryGetPersonsNames = <<"MATCH (n:Person) RETURN n.name">>,
+    Statement = eneo4j:build_statement(QueryGetPersonsNames, #{}),
+    {ok, BeginResponse} = eneo4j:begin_transaction([Statement]),
+
+    {ok, RunLink1} = eneo4j_reponse:get_run_queries_link(BeginResponse),
+    {ok, RunResponse1} = eneo4j:run_queries_inside_transaction([Statement], RunLink1),
+
+    {ok, RunLink2} = eneo4j_reponse:get_run_queries_link(RunResponse1),
+    {ok, RunResponse2} = eneo4j:run_queries_inside_transaction([Statement], RunLink2),
+
+    ?assertEqual(RunLink1, RunLink2),
+
+    {ok, CommitLink} = eneo4j_reponse:get_commit_transaction_link(RunResponse2),
+    ?assertMatch({ok, _}, eneo4j:commit_transaction([], CommitLink)).
+
+begin_then_keep_alive_then_commit_a_transaction_in_separate_requests(_Config) ->
+    QueryGetPersonsNames = <<"MATCH (n:Person) RETURN n.name">>,
+    Statement = eneo4j:build_statement(QueryGetPersonsNames, #{}),
+    {ok, BeginResponse} = eneo4j:begin_transaction([Statement]),
+
+    {ok, RunLink1} = eneo4j_reponse:get_run_queries_link(BeginResponse),
+    {ok, KeepAliveResponse} = eneo4j:keep_alive_transaction(RunLink1),
+
+    {ok, CommitLink} = eneo4j_reponse:get_commit_transaction_link(KeepAliveResponse),
     ?assertMatch({ok, _}, eneo4j:commit_transaction([], CommitLink)).
 
 % eof

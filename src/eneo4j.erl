@@ -5,6 +5,7 @@
     begin_and_commit_transaction/1,
     begin_transaction/1,
     run_queries_inside_transaction/2,
+    keep_alive_transaction/1,
     commit_transaction/2
 ]).
 
@@ -28,6 +29,9 @@ begin_transaction(Statements) ->
 run_queries_inside_transaction(Statements, RunLink) ->
     Request = {{run_queries, RunLink}, Statements},
     call_wpool(Request).
+
+keep_alive_transaction(RunLink) ->
+    run_queries_inside_transaction([], RunLink).
 
 commit_transaction(Statements, CommitLink) ->
     Request = {{commit_transaction, CommitLink}, Statements},
