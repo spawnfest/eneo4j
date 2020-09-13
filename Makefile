@@ -2,7 +2,7 @@ all: setup_db all_checks format show_cover report_cover
 
 all_checks: compile run_type_checks run_tests
 
-precommit: all_checks format
+precommit: all_checks format build_docs
 
 setup_db:
 	docker-compose up -d
@@ -12,6 +12,9 @@ compile:
 
 format:
 	rebar3 fmt
+
+build_docs:
+	rebar3 edoc
 
 run_type_checks:
 	rebar3 xref
