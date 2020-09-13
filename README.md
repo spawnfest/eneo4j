@@ -10,11 +10,11 @@ eneo4j
 ## Description
 
 This project is prepared during a Spawnfest competition.
-It aims to implement easy communication with neo4j database using its [HTTP API](https://neo4j.com/docs/http-api/current/introduction/).
+It aims to implement easy communication with neo4j database using its [HTTP API](https://neo4j.com/docs/http-api/current/introduction/). This library is written in Erlang so that it can be used from both Erlang and Elixir.
 
 ## Installation
 
-To `rebar.config` add
+To `rebar.config` add:
 
 ```erlang
 {deps, [
@@ -57,7 +57,7 @@ Do not include `user` and `password` if your neo4j does not have a password conf
 
 This section describes how to build requests and what kind of answer to expect.
 
-### Discovery API
+### [Discovery API](https://neo4j.com/docs/http-api/current/discovery/)
 
 This part of the API could be used to check the connection.
 It returns basic information about the requested neo4j instance.
@@ -65,6 +65,7 @@ It returns basic information about the requested neo4j instance.
 ```erlang
 eneo4j:discvery_api().
 
+% Result is:
 {ok, 200,
   #{
     <<"bolt_direct">> => <<"bolt://localhost:7687">>,
@@ -75,5 +76,75 @@ eneo4j:discvery_api().
   }
 }
 ```
+
+### [Begin and commit a transaction](https://neo4j.com/docs/http-api/current/actions/begin-and-commit-a-transaction-in-one-request/)
+
+Let's say we have added a node to the database:
+
+```cypher
+CREATE (n:Person { name: 'Andy', title: 'Developer' });
+```
+
+And we just want to get all the information about Andy's node we can:
+
+```erlang
+Query = <<"MATCH (n) WHERE n.name = $name RETURN n">>,
+Params = #{<<"name">> => <<"Andy">>},
+Statement = eneo4j:build_statement(Query, Params),
+eneo4j:begin_and_commit_transaction([Statement]).
+
+{
+  ok,
+  200,
+  #{
+    <<"errors">> => [],
+    <<"results">> => [
+      #{
+        <<"columns">> => [<<"n">>],
+        <<"data">> => [
+          #{<<"meta">> => [
+            #{<<"deleted">> => false,
+            <<"id">> => 3,
+            <<"type">> => <<"node">>}],
+            <<"row">> => [
+              #{<<"name">> => <<"Andy">>,
+                <<"title">> => <<"Developer">>
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+To query neo4j:
+```erlang
+% Write your query using cypher:
+Query = <<"CREATE (n:Person { name: $name, title: $title });">>,
+
+% Provide params if needed:
+ParamsAndy = #{
+  <<"name">> => <<"Andy">>,
+  <<"title">> => <<"Developer">>
+  },
+
+% Build a statement:
+Statement = eneo4j:build_statement(Query, ParamsAndy),
+
+%Let's build another user:
+ParamsJohn = #{
+  <<"name">> => <<"Andy">>,
+  <<"title">> => <<"Manager">>
+  },
+
+% We will reuse query, but you may provide a different one if you ant to.
+Statement2 = eneo4j:build_statement(Query, ParamsJohn, true),
+
+% Lets execute those queries:
+eneo4j:begin_and_commit_transaction([Statement, Statement2]).
+```
+
 
 <!-- EOF -->
