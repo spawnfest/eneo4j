@@ -3,12 +3,14 @@
 -export([
     is_successful/1,
     get_commit_transaction_link/1,
+    get_rollback_transaction_link/1,
     get_run_queries_link/1
 ]).
 
 -ignore_xref([
     {?MODULE, is_successful, 1},
     {?MODULE, get_commit_transaction_link, 1},
+    {?MODULE, get_rollback_transaction_link, 1},
     {?MODULE, get_run_queries_link, 1}
 ]).
 
@@ -21,6 +23,9 @@ get_commit_transaction_link(#{<<"errors">> := []} = Result) ->
     {error, {no_commit_link, Result}};
 get_commit_transaction_link(Error) ->
     Error.
+
+get_rollback_transaction_link(Resposne) ->
+    get_run_queries_link(Resposne).
 
 get_run_queries_link(Response) ->
     CommitLink = get_commit_transaction_link(Response),

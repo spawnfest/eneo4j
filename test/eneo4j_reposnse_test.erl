@@ -106,4 +106,25 @@ get_run_queries_link_returns_error_on_error_input_test() ->
     Error = {error, some_reason},
     ?assertEqual(Error, eneo4j_reponse:get_run_queries_link(Error)).
 
+get_rollback_transaction_link_return_link_on_begin_transaction_success_test() ->
+    {ok, RunLink} = eneo4j_reponse:get_rollback_transaction_link(?BEGIN_TRANSACTION_SUCCESS),
+    ?assertEqual(?BEGIN_TRANSACTION_SUCCESS_LINK, RunLink).
+
+get_rollback_transaction_link_return_link_on_begin_transaction_error_test() ->
+    Result = eneo4j_reponse:get_rollback_transaction_link(?BEGIN_TRANSACTION_FAIL),
+    ?assertMatch({error, _}, Result).
+
+get_rollback_transaction_link_return_link_from_run_queries_test() ->
+    BinLink = <<"http://localhost:7470/db/neo4j/tx/397">>,
+    LstLink = binary:bin_to_list(BinLink),
+    RunQueriesResult = #{
+        <<"commit">> => BinLink,
+        <<"errors">> => []
+    },
+    ?assertEqual({ok, LstLink}, eneo4j_reponse:get_rollback_transaction_link(RunQueriesResult)).
+
+get_rollback_transaction_link_returns_error_on_error_input_test() ->
+    Error = {error, some_reason},
+    ?assertEqual(Error, eneo4j_reponse:get_rollback_transaction_link(Error)).
+
 % eof

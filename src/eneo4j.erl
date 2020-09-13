@@ -72,10 +72,6 @@ process_response(
     Response = #{<<"results">> := [], <<"errors">> := []}
 ) when HttpStatusCode =/= 404 ->
     {ok, Response};
-process_response({rollback_transaction, _}, HttpStatusCode, ErrorResponse) when
-    HttpStatusCode =/= 404
-->
-    {error, ErrorResponse};
 process_response(_, 404, Response) ->
     {error, {transaction_not_found, Response}};
 process_response(_, _, Response) ->

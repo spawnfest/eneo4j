@@ -69,6 +69,8 @@ tests() ->
         begin_and_then_fail_on_commit_a_transaction_in_separate_requests,
         begin_then_run_then_commit_a_transaction_in_separate_requests,
         begin_then_run_several_times_then_commit_a_transaction_in_separate_requests,
+        begin_then_keep_alive_then_commit_a_transaction_in_separate_requests,
+        begin_then_rollback_a_transaction_in_separate_requests,
         begin_then_keep_alive_different_transaction_returns_error,
         begin_then_run_queries_on_a_different_transaction_returns_error,
         begin_then_commit_a_different_transaction_returns_error,
@@ -194,6 +196,17 @@ begin_then_keep_alive_then_commit_a_transaction_in_separate_requests(_Config) ->
     {ok, CommitLink} = eneo4j_reponse:get_commit_transaction_link(KeepAliveResponse),
     ?assertMatch({ok, _}, eneo4j:commit_transaction([], CommitLink)).
 
+begin_then_rollback_a_transaction_in_separate_requests(_Config) ->
+    QueryGetPersonsNames = <<"MATCH (n:Person) RETURN n.name">>,
+    Statement = eneo4j:build_statement(QueryGetPersonsNames, #{}),
+    {ok, BeginResponse} = eneo4j:begin_transaction([Statement]),
+
+    {ok, RunLink1} = eneo4j_reponse:get_run_queries_link(BeginResponse),
+    {ok, KeepAliveResponse} = eneo4j:keep_alive_transaction(RunLink1),
+
+    {ok, RollbackLink} = eneo4j_reponse:get_rollback_transaction_link(KeepAliveResponse),
+    ?assertMatch({ok, _}, eneo4j:rollback_transaction(RollbackLink)).
+
 begin_then_keep_alive_different_transaction_returns_error(_Config) ->
     QueryGetPersonsNames = <<"MATCH (n:Person) RETURN n.name">>,
     Statement = eneo4j:build_statement(QueryGetPersonsNames, #{}),
@@ -226,7 +239,7 @@ begin_then_rollback_a_different_transaction_returns_error(_Config) ->
     Statement = eneo4j:build_statement(QueryGetPersonsNames, #{}),
     {ok, BeginResponse} = eneo4j:begin_transaction([Statement]),
 
-    {ok, RunLink1} = eneo4j_reponse:get_run_queries_link(BeginResponse),
+    {ok, RunLink1} = eneo4j_reponse:get_rollback_transaction_link(BeginResponse),
     Result = eneo4j:rollback_transaction(RunLink1 ++ "1"),
     ?assertMatch({error, {transaction_not_found, _}}, Result).
 
