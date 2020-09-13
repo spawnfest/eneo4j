@@ -193,8 +193,49 @@ To begin a transaction:
 
 ### [Run](https://neo4j.com/docs/http-api/current/actions/execute-statements-in-an-open-transaction/) or [keep alive](https://neo4j.com/docs/http-api/current/actions/reset-transaction-timeout-of-an-open-transaction/) transactions
 
+When you have a query started  you may want to run more queries inside it:
 
-WIP
+```erlang
+
+% You have opened a transaction:
+{ok, BeginResponse} = eneo4j:begin_transaction([Statement]),
+
+% You extract `run_queries_link` from the Begin query result
+{ok, RunLink} = eneo4j_reponse:get_run_queries_link(BeginResponse),
+% Let's assume you have a list of statements under Statements and OtherStatements variables
+{ok, RunResponse} = eneo4j:run_queries_inside_transaction(Statements, RunLink),
+
+% Later on you can run more queries inside the same transaction.
+% You can use run_queries_inside_transaction result to get a run link
+
+{ok, RunLink2} = eneo4j_reponse:get_run_queries_link(RunResponse),
+{ok, AnotherRunResponse} = eneo4j:run_queries_inside_transaction(OtherStatements, RunLink2),
+```
+
+Since by default queries are expiring after 60 seconds you may want to keep it alive like this:
+
+```erlang
+% You have opened a transaction:
+{ok, BeginResponse} = eneo4j:begin_transaction([Statement]),
+
+% You extract `run_queries_link` from the Begin query result
+{ok, RunLink} = eneo4j_reponse:get_run_queries_link(BeginResponse),
+
+%Lets wait for a while:
+timer:sleep(40 * 1000),
+
+% You do not want the transaction to timeout, but you do not want to send more queries yet you may just keep it alive
+{ok, KeepAliveResponse} = eneo4j:keep_alive_transaction(RunLink),
+
+%Lets wait for a while:
+timer:sleep(40 * 1000),
+
+% You may later on commit, run queries or rollback transaction after that.
+
+{ok, RunLink2} = eneo4j_reponse:get_run_queries_link(KeepAliveResponse),
+{ok, AnotherRunResponse} = eneo4j:run_queries_inside_transaction(OtherStatements, RunLink2),
+...
+```
 
 ### [Commit](https://neo4j.com/docs/http-api/current/actions/commit-an-open-transaction/) transaction
 
