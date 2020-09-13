@@ -16,6 +16,7 @@ format:
 run_type_checks:
 	rebar3 xref
 	rebar3 gradualizer
+	rebar3 dialyzer
 
 run_tests:
 	rebar3 ct --cover
