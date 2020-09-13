@@ -75,7 +75,15 @@ eneo4j:discvery_api().
 }
 ```
 
-### [Begin and commit a transaction](https://neo4j.com/docs/http-api/current/actions/begin-and-commit-a-transaction-in-one-request/)
+## [Transactions workflow](https://neo4j.com/docs/http-api/current/actions/transaction-flow/)
+
+To understand the requests see this Cypher transaction flow:
+
+![Transactions flow](https://neo4j.com/docs/http-api/current/images/http-cypher-transaction-api-flow.png)
+
+The following sections show how to make those actions happen from Erlang API level.
+
+### [Begin & commit](https://neo4j.com/docs/http-api/current/actions/begin-and-commit-a-transaction-in-one-request/) transaction
 
 To query neo4j:
 
@@ -167,4 +175,43 @@ Let's consider an error in a query:
   }
 ]}
 ```
+
+
+### [Begin](https://neo4j.com/docs/http-api/current/actions/begin-a-transaction/) transaction
+
+If you want to just open a transaction and later on decide whether to add more statements to it, commit it or rollback it.
+
+To begin a transaction:
+
+```erlang
+...
+  QueryGetPersonsNames = <<"MATCH (n:Person) RETURN n.name">>,
+  Statement = eneo4j:build_statement(QueryGetPersonsNames, #{}),
+  {ok, Response} = eneo4j:begin_transaction([Statement]),
+...
+```
+
+### [Run](https://neo4j.com/docs/http-api/current/actions/execute-statements-in-an-open-transaction/) or [keep alive](https://neo4j.com/docs/http-api/current/actions/reset-transaction-timeout-of-an-open-transaction/) transactions
+
+
+WIP
+
+### [Commit](https://neo4j.com/docs/http-api/current/actions/commit-an-open-transaction/) transaction
+
+When you have a transaction opened successfully result or run query result, you need to extract the commit query link from the response to commit this query:
+
+```erlang
+...
+  {ok, Response} = eneo4j:begin_transaction([Statement]),
+  {ok, CommitLink} = eneo4j_reponse:get_commit_transaction_link(Response),
+  % You may add statements when committing a transaction
+  Statements = [],
+  eneo4j:commit_transaction(Statements, CommitLink),
+...
+```
+
+### [Rollback](https://neo4j.com/docs/http-api/current/actions/rollback-an-open-transaction/) an open transaction
+
+WIP
+
 <!-- EOF -->
