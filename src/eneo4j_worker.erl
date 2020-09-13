@@ -13,6 +13,7 @@
 -export([
     init/1,
     handle_call/3,
+    handle_cast/2,
     handle_info/2
 ]).
 
@@ -81,6 +82,10 @@ handle_call({RequestType, Statements}, _From, State = #{headers := Headers}) ->
     FullUrl = build_url(RequestType, State),
     Response = send_request_and_process_response(post, FullUrl, Headers, Request),
     {reply, Response, State}.
+
+handle_cast(Cast, State) ->
+    logger:warning("Unexpected cast ~p", [Cast]),
+    {noreply, State}.
 
 handle_info(Info, State) ->
     logger:warning("Unexpected message ~p", [Info]),

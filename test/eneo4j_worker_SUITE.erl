@@ -143,6 +143,16 @@ when_unexpected_message_is_send_it_is_logged(Config) ->
     ?assert(is_process_alive(Worker)),
     Config.
 
+when_unexpected_cast_is_send_it_is_logged(Config) ->
+    WorkerConfig = ?config(worker_config, Config),
+    {ok, Worker} = eneo4j_worker:start_link(WorkerConfig),
+    gen_server:cast(Worker, "unexpected cast"),
+    % Wait for message to come
+    timer:sleep(100),
+    ?assertEqual("Unexpected cast unexpected cast", ?capturedOutput),
+    ?assert(is_process_alive(Worker)),
+    Config.
+
 % Open -> commit
 % Open -> run_non_empty -> commit
 % Open -> run_non_empty -> run_non_empty -> commit
