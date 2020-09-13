@@ -65,6 +65,12 @@ Executing this test on my laptop gives following result:
 
 ![Benchmark result](/benchmark/BenchmarkResult.png)
 
+## Test
+
+To setup databases for testing purposes run `make setup_db`.
+To run the tests run `make precommit`.
+For further details see Makefile.
+
 ## Use
 
 This section describes how to build requests and what kind of answer to expect.
