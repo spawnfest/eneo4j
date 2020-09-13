@@ -19,6 +19,7 @@
 <h2><a name="description">Description</a></h2>
    This module provides functions to begin, run, commit and rollback transactions,
    and statement builder.
+   It is a main API for this library.
 <h2><a name="types">Data Types</a></h2>
 
 <h3 class="typedecl"><a name="type-discovery_api_response">discovery_api_response()</a></h3>
@@ -50,16 +51,24 @@
 
 
 <h2><a name="index">Function Index</a></h2>
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#begin_and_commit_transaction-1">begin_and_commit_transaction/1</a></td><td></td></tr>
-<tr><td valign="top"><a href="#begin_transaction-1">begin_transaction/1</a></td><td></td></tr>
-<tr><td valign="top"><a href="#build_statement-2">build_statement/2</a></td><td></td></tr>
-<tr><td valign="top"><a href="#build_statement-3">build_statement/3</a></td><td></td></tr>
-<tr><td valign="top"><a href="#commit_transaction-2">commit_transaction/2</a></td><td></td></tr>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#begin_and_commit_transaction-1">begin_and_commit_transaction/1</a></td><td>   
+Use this function to begin and commit a transaction in a single HTTP request.</td></tr>
+<tr><td valign="top"><a href="#begin_transaction-1">begin_transaction/1</a></td><td>   
+Use this function to begin transaction.</td></tr>
+<tr><td valign="top"><a href="#build_statement-2">build_statement/2</a></td><td>   
+This function works the same as eneo4j:build_statement(Query, Params, false).</td></tr>
+<tr><td valign="top"><a href="#build_statement-3">build_statement/3</a></td><td>
+   This function allows to build a statement and include query stats.</td></tr>
+<tr><td valign="top"><a href="#commit_transaction-2">commit_transaction/2</a></td><td>   
+Use this function commit a transaction.</td></tr>
 <tr><td valign="top"><a href="#discovery_api-0">discovery_api/0</a></td><td>   
 Use this function to extract information about neo4j version, distribution, etc.</td></tr>
-<tr><td valign="top"><a href="#keep_alive_transaction-1">keep_alive_transaction/1</a></td><td></td></tr>
-<tr><td valign="top"><a href="#rollback_transaction-1">rollback_transaction/1</a></td><td></td></tr>
-<tr><td valign="top"><a href="#run_queries_inside_transaction-2">run_queries_inside_transaction/2</a></td><td></td></tr>
+<tr><td valign="top"><a href="#keep_alive_transaction-1">keep_alive_transaction/1</a></td><td>   
+Use this function to keep transaction alive.</td></tr>
+<tr><td valign="top"><a href="#rollback_transaction-1">rollback_transaction/1</a></td><td>   
+Use this function rollback a transaction.</td></tr>
+<tr><td valign="top"><a href="#run_queries_inside_transaction-2">run_queries_inside_transaction/2</a></td><td>   
+Use this function to begin transaction.</td></tr>
 </table>
 
 <h2><a name="functions">Function Details</a></h2>
@@ -68,31 +77,73 @@ Use this function to extract information about neo4j version, distribution, etc.
 <div class="spec">
 <p><tt>begin_and_commit_transaction(Statements::<a href="#type-statements">statements()</a>) -&gt; <a href="#type-query_result">query_result()</a></tt><br></p>
 <p> </p>
-</div>
+</div><p><p>   
+Use this function to begin and commit a transaction in a single HTTP request.</p>
+  
+   <pre>   Query = &lt;&lt;"CREATE (n:Person { name: $name, title: $title });"&gt;&gt;,
+  
+   % Provide params if needed:
+   ParamsAndy = #{
+    &lt;&lt;"name"&gt;&gt; =&gt; &lt;&lt;"Andy"&gt;&gt;,
+    &lt;&lt;"title"&gt;&gt; =&gt; &lt;&lt;"Developer"&gt;&gt;
+    },
+  
+   % Build a statement:
+   Statement = eneo4j:build_statement(Query, ParamsAndy),
+   Execute the query
+   {ok, Result} = eneo4j:begin_and_commit_transaction([Statement]).</pre></p>
 
 <h3 class="function"><a name="begin_transaction-1">begin_transaction/1</a></h3>
 <div class="spec">
 <p><tt>begin_transaction(Statements::<a href="#type-statements">statements()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
 <p> </p>
-</div>
+</div><p><p>   
+Use this function to begin transaction</p>
+  
+   <pre>   QueryGetPersonsNames = &lt;&lt;"MATCH (n:Person) RETURN n.name"&gt;&gt;,
+   Statement = eneo4j:build_statement(QueryGetPersonsNames, #{}),
+   {ok, Result} = eneo4j:begin_transaction([Statement]),</pre></p>
 
 <h3 class="function"><a name="build_statement-2">build_statement/2</a></h3>
 <div class="spec">
 <p><tt>build_statement(Query::binary(), Params::#{binary() =&gt; any()}) -&gt; <a href="#type-statement">statement()</a></tt><br></p>
 <p> </p>
-</div>
+</div><p><p>   
+This function works the same as eneo4j:build_statement(Query, Params, false)</p>
+  
+   <pre>   Query = &lt;&lt;"MATCH (n) WHERE n.name = $name RETURN n"&gt;&gt;,
+   Params = #{&lt;&lt;"name"&gt;&gt; =&gt; &lt;&lt;"Andy"&gt;&gt;},
+   Statement = eneo4j:build_statement(Query, Params),</pre></p>
 
 <h3 class="function"><a name="build_statement-3">build_statement/3</a></h3>
 <div class="spec">
 <p><tt>build_statement(Query::binary(), Params::#{binary() =&gt; any()}, IncludeStats::boolean()) -&gt; <a href="#type-statement">statement()</a></tt><br></p>
-<p> </p>
-</div>
+<p><tt>Query</tt>: - is a binary form query<br>
+<tt>Params</tt>: - is a map providing params to a query<br>
+<tt>IncludeStats</tt>: <p>- is a boolean, when <code>true</code> query stats are included in a response</p>
+  
+   This function allows to build a statement to pass to be send as a query.
+   <pre>   Query = &lt;&lt;"MATCH (n) WHERE n.name = $name RETURN n"&gt;&gt;,
+   Params = #{&lt;&lt;"name"&gt;&gt; =&gt; &lt;&lt;"Andy"&gt;&gt;},
+   Statement = eneo4j:build_statement(Query, Params, true),</pre><br>
+</p>
+</div><p>
+   This function allows to build a statement and include query stats.</p>
 
 <h3 class="function"><a name="commit_transaction-2">commit_transaction/2</a></h3>
 <div class="spec">
 <p><tt>commit_transaction(Statements::<a href="#type-statements">statements()</a>, CommitLink::<a href="eneo4j_response.html#type-commit_transaction_link">eneo4j_response:commit_transaction_link()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
 <p> </p>
-</div>
+</div><p><p>   
+Use this function commit a transaction.</p>
+  
+   <pre>    {ok, Response} = eneo4j:begin_transaction([Statement]),
+    {ok, CommitLink} = eneo4j_response:get_commit_transaction_link(Response),
+  
+    % You may add statements when committing a transaction
+  
+    Statements = [],
+    {ok, Result} = eneo4j:commit_transaction(Statements, CommitLink),</pre></p>
 
 <h3 class="function"><a name="discovery_api-0">discovery_api/0</a></h3>
 <div class="spec">
@@ -107,19 +158,63 @@ Use this function to extract information about neo4j version, distribution, etc.
 <div class="spec">
 <p><tt>keep_alive_transaction(RunLink::<a href="eneo4j_response.html#type-run_queries_link">eneo4j_response:run_queries_link()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
 <p> </p>
-</div>
+</div><p><p>   
+Use this function to keep transaction alive.   
+It will timeout after 60 seconds (by default).</p>
+  
+   <pre>   {ok, BeginResponse} = eneo4j:begin_transaction([]),
+  
+   Query = &lt;&lt;"MATCH (n:Person) RETURN n.name"&gt;&gt;,
+   Statement = eneo4j:build_statement(Query, #{}),
+  
+   timer:sleep(timer:seconds(40)),
+  
+   {ok, RunLink} = eneo4j_response:get_run_queries_link(BeginResponse),
+   {ok, RunResponse} = eneo4j:keep_alive_transaction(RunLink),
+  
+   % Normally transaction would timeout here,
+   % but thanks to eneo4j:keep_alive_transaction/1 call it will remain opened.
+  
+   timer:sleep(timer:seconds(40)),
+  
+   % Run queries inside transaction many times:
+  
+   {ok, RunLink2} = eneo4j_response:get_run_queries_link(RunResponse),
+   {ok, Result} = eneo4j:run_queries_inside_transaction([Statement], RunLink2),</pre></p>
 
 <h3 class="function"><a name="rollback_transaction-1">rollback_transaction/1</a></h3>
 <div class="spec">
 <p><tt>rollback_transaction(RollbackLink::<a href="eneo4j_response.html#type-rollback_transaction_link">eneo4j_response:rollback_transaction_link()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
 <p> </p>
-</div>
+</div><p><p>   
+Use this function rollback a transaction.</p>
+  
+   <pre>    {ok, Response} = eneo4j:begin_transaction([Statement]),
+    {ok, RollbackLink} = eneo4j_response:get_rollback_transaction_link(Response),
+  
+    % You may add statements when committing a transaction
+  
+    Statements = [],
+    {ok, Result} = eneo4j:rollback_transaction(Statements, RollbackLink),</pre></p>
 
 <h3 class="function"><a name="run_queries_inside_transaction-2">run_queries_inside_transaction/2</a></h3>
 <div class="spec">
 <p><tt>run_queries_inside_transaction(Statements::<a href="#type-statements">statements()</a>, RunLink::<a href="eneo4j_response.html#type-run_queries_link">eneo4j_response:run_queries_link()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
 <p> </p>
-</div>
+</div><p><p>   
+Use this function to begin transaction</p>
+  
+   <pre>   {ok, BeginResponse} = eneo4j:begin_transaction([]),
+  
+   Query = &lt;&lt;"MATCH (n:Person) RETURN n.name"&gt;&gt;,
+   Statement = eneo4j:build_statement(Query, #{}),
+  
+   {ok, RunLink} = eneo4j_response:get_run_queries_link(BeginResponse),
+   {ok, RunResponse} = eneo4j:run_queries_inside_transaction([Statement], RunLink),
+  
+   % Run queries inside transaction many times:
+   {ok, RunLink2} = eneo4j_response:get_run_queries_link(RunResponse),
+   {ok, Result} = eneo4j:run_queries_inside_transaction([Statement], RunLink2),</pre></p>
 <hr>
 
 <div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
