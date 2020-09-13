@@ -106,8 +106,8 @@ build_request(Statements) when is_list(Statements) ->
     RawRequest = #{statements => Statements},
     jiffy:encode(RawRequest).
 
-build_url({commit_transaction, CommitLink}, _) ->
-    CommitLink;
+build_url({Type, Link}, _) when commit_transaction == Type orelse run_queries == Type ->
+    Link;
 build_url(begin_transaction, #{url := Url, db := DB}) ->
     Url ++ "/db/" ++ DB ++ "/tx";
 build_url(begin_and_commit_transaction, #{url := Url, db := DB}) ->

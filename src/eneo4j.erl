@@ -4,6 +4,7 @@
     discvery_api/0,
     begin_and_commit_transaction/1,
     begin_transaction/1,
+    run_queries_inside_transaction/2,
     commit_transaction/2
 ]).
 
@@ -22,6 +23,10 @@ begin_and_commit_transaction(Statements) ->
 
 begin_transaction(Statements) ->
     Request = {begin_transaction, Statements},
+    call_wpool(Request).
+
+run_queries_inside_transaction(Statements, RunLink) ->
+    Request = {{run_queries, RunLink}, Statements},
     call_wpool(Request).
 
 commit_transaction(Statements, CommitLink) ->

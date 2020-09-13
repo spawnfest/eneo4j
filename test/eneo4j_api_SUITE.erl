@@ -66,7 +66,8 @@ tests() ->
         when_error_is_returned_it_is_reported,
         begin_and_then_commit_a_transaction_in_separate_requests,
         fail_on_error_begin_a_transaction_in_separate_requests,
-        begin_and_then_fail_on_commit_a_transaction_in_separate_requests
+        begin_and_then_fail_on_commit_a_transaction_in_separate_requests,
+        begin_then_run_then_commit_a_transaction_in_separate_requests
     ].
 
 discovery_api_returns_correct_map(_Config) ->
@@ -149,5 +150,16 @@ begin_and_then_fail_on_commit_a_transaction_in_separate_requests(_Config) ->
     ErrorQuery = <<"MATCHXD (n:Person) RETURN n.name">>,
     ErrorStatement = eneo4j:build_statement(ErrorQuery, #{}),
     ?assertMatch({error, _}, eneo4j:commit_transaction([ErrorStatement], CommitLink)).
+
+begin_then_run_then_commit_a_transaction_in_separate_requests(_Config) ->
+    QueryGetPersonsNames = <<"MATCH (n:Person) RETURN n.name">>,
+    Statement = eneo4j:build_statement(QueryGetPersonsNames, #{}),
+    {ok, BeginResponse} = eneo4j:begin_transaction([Statement]),
+
+    {ok, RunLink} = eneo4j_reponse:get_run_queries_link(BeginResponse),
+    {ok, RunResponse} = eneo4j:run_queries_inside_transaction([Statement], RunLink),
+
+    {ok, CommitLink} = eneo4j_reponse:get_commit_transaction_link(RunResponse),
+    ?assertMatch({ok, _}, eneo4j:commit_transaction([], CommitLink)).
 
 % eof
