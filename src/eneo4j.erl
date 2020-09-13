@@ -1,3 +1,8 @@
+%%% @author Aleksander Lisiecki <alek.lisiecki@gmail.com>
+%%% @doc
+%%% This module provides functions to begin, run, commit and rollback transactions,
+%%% and statement builder.
+
 -module(eneo4j).
 
 -export([
@@ -37,6 +42,18 @@
 -type statements() :: eneo4j_worker:statements().
 -type statement() :: eneo4j_worker:statement().
 
+%%% @doc
+%%% Use this function to extract information about neo4j version, distribution, etc.
+%%%
+%%% It may be used to check the connection and if the database wa configured correctly.
+
+%%% Following code should work if you have the right url configured:
+%%% ```
+%%% #{
+%%%     <<"neo4j_edition">> := _,
+%%%     <<"neo4j_version">> := _
+%%% } = eneo4j:discovery_api()
+%%% '''
 -spec discovery_api() -> discovery_api_response().
 discovery_api() ->
     {ok, 200, Response} = wpool:call(eneo4j_workers_pool, discovery_api, available_worker),

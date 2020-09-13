@@ -10,9 +10,15 @@
 <hr>
 
 <h1>Module eneo4j</h1>
-<ul class="index"><li><a href="#types">Data Types</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#types">Data Types</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>
+   This module provides functions to begin, run, commit and rollback transactions,
+   and statement builder.
 
+<p><b>Authors:</b> Aleksander Lisiecki (<a href="mailto:alek.lisiecki@gmail.com"><tt>alek.lisiecki@gmail.com</tt></a>).</p>
 
+<h2><a name="description">Description</a></h2>
+   This module provides functions to begin, run, commit and rollback transactions,
+   and statement builder.
 <h2><a name="types">Data Types</a></h2>
 
 <h3 class="typedecl"><a name="type-discovery_api_response">discovery_api_response()</a></h3>
@@ -49,7 +55,8 @@
 <tr><td valign="top"><a href="#build_statement-2">build_statement/2</a></td><td></td></tr>
 <tr><td valign="top"><a href="#build_statement-3">build_statement/3</a></td><td></td></tr>
 <tr><td valign="top"><a href="#commit_transaction-2">commit_transaction/2</a></td><td></td></tr>
-<tr><td valign="top"><a href="#discovery_api-0">discovery_api/0</a></td><td></td></tr>
+<tr><td valign="top"><a href="#discovery_api-0">discovery_api/0</a></td><td>   
+Use this function to extract information about neo4j version, distribution, etc.</td></tr>
 <tr><td valign="top"><a href="#keep_alive_transaction-1">keep_alive_transaction/1</a></td><td></td></tr>
 <tr><td valign="top"><a href="#rollback_transaction-1">rollback_transaction/1</a></td><td></td></tr>
 <tr><td valign="top"><a href="#run_queries_inside_transaction-2">run_queries_inside_transaction/2</a></td><td></td></tr>
@@ -91,7 +98,10 @@
 <div class="spec">
 <p><tt>discovery_api() -&gt; <a href="#type-discovery_api_response">discovery_api_response()</a></tt><br></p>
 <p> </p>
-</div>
+</div><p><p>   
+Use this function to extract information about neo4j version, distribution, etc.</p>
+  
+   It may be used to check the connection and if the database wa configured correctly.</p>
 
 <h3 class="function"><a name="keep_alive_transaction-1">keep_alive_transaction/1</a></h3>
 <div class="spec">
