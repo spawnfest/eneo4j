@@ -63,7 +63,7 @@ This part of the API could be used to check the connection.
 It returns basic information about the requested neo4j instance.
 
 ```erlang
-eneo4j:discvery_api().
+eneo4j:discovery_api().
 
 % Result is:
 #{
@@ -201,14 +201,14 @@ When you have a query started  you may want to run more queries inside it:
 {ok, BeginResponse} = eneo4j:begin_transaction([Statement]),
 
 % You extract `run_queries_link` from the Begin query result
-{ok, RunLink} = eneo4j_reponse:get_run_queries_link(BeginResponse),
+{ok, RunLink} = eneo4j_response:get_run_queries_link(BeginResponse),
 % Let's assume you have a list of statements under Statements and OtherStatements variables
 {ok, RunResponse} = eneo4j:run_queries_inside_transaction(Statements, RunLink),
 
 % Later on you can run more queries inside the same transaction.
 % You can use run_queries_inside_transaction result to get a run link
 
-{ok, RunLink2} = eneo4j_reponse:get_run_queries_link(RunResponse),
+{ok, RunLink2} = eneo4j_response:get_run_queries_link(RunResponse),
 {ok, AnotherRunResponse} = eneo4j:run_queries_inside_transaction(OtherStatements, RunLink2),
 ```
 
@@ -219,7 +219,7 @@ Since by default queries are expiring after 60 seconds you may want to keep it a
 {ok, BeginResponse} = eneo4j:begin_transaction([Statement]),
 
 % You extract `run_queries_link` from the Begin query result
-{ok, RunLink} = eneo4j_reponse:get_run_queries_link(BeginResponse),
+{ok, RunLink} = eneo4j_response:get_run_queries_link(BeginResponse),
 
 %Lets wait for a while:
 timer:sleep(40 * 1000),
@@ -232,7 +232,7 @@ timer:sleep(40 * 1000),
 
 % You may later on commit, run queries or rollback transaction after that.
 
-{ok, RunLink2} = eneo4j_reponse:get_run_queries_link(KeepAliveResponse),
+{ok, RunLink2} = eneo4j_response:get_run_queries_link(KeepAliveResponse),
 {ok, AnotherRunResponse} = eneo4j:run_queries_inside_transaction(OtherStatements, RunLink2),
 ...
 ```
@@ -244,7 +244,7 @@ When you have a transaction opened successfully result or run query result, you 
 ```erlang
 ...
   {ok, Response} = eneo4j:begin_transaction([Statement]),
-  {ok, CommitLink} = eneo4j_reponse:get_commit_transaction_link(Response),
+  {ok, CommitLink} = eneo4j_response:get_commit_transaction_link(Response),
   % You may add statements when committing a transaction
   Statements = [],
   eneo4j:commit_transaction(Statements, CommitLink),
@@ -260,7 +260,7 @@ When you have a transaction opened successfully result or run query result, you 
 
 % But you decided that you do not want to commit those changes but rather rollback therm
 % Then using BeginResponse you get a RollbackLink
-{ok, RollbackLink} = eneo4j_reponse:get_rollback_transaction_link(BeginResponse),
+{ok, RollbackLink} = eneo4j_response:get_rollback_transaction_link(BeginResponse),
 % And you use that link to rollback the transaction
 {ok, _} = eneo4j:rollback_transaction(RollbackLink).
 ```

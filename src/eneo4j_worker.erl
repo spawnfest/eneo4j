@@ -24,7 +24,7 @@
 
 -compile({inline, [build_content_headers/0]}).
 
--export_type([eneo4j_worker_config/0]).
+-export_type([eneo4j_worker_config/0, statement/0, statements/0]).
 
 -type start_error() :: {already_started, pid()} | term().
 -type start_result() :: {ok, pid()} | ignore | {error, start_error()}.
@@ -48,7 +48,7 @@
 }.
 
 -type cypher_query() :: binary().
--type query_params() :: #{atom() => any()}.
+-type query_params() :: #{binary() => any()}.
 -type statement() :: #{
     statement := cypher_query(),
     parameters := query_params(),
