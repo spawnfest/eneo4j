@@ -14,6 +14,7 @@ format:
 	rebar3 fmt
 
 run_type_checks:
+	rebar3 xref
 	rebar3 gradualizer
 
 run_tests:

@@ -14,6 +14,17 @@
     build_statement/3
 ]).
 
+-ignore_xref([
+    {?MODULE, discvery_api, 0},
+    {?MODULE, begin_and_commit_transaction, 1},
+    {?MODULE, begin_transaction, 1},
+    {?MODULE, run_queries_inside_transaction, 2},
+    {?MODULE, keep_alive_transaction, 1},
+    {?MODULE, commit_transaction, 2},
+    {?MODULE, build_statement, 2},
+    {?MODULE, build_statement, 3}
+]).
+
 discvery_api() ->
     {ok, 200, Response} = wpool:call(eneo4j_workers_pool, discovery_api, available_worker),
     Response.

@@ -2,6 +2,25 @@
 
 -behaviour(gen_server).
 
+-export([
+    start_link/1
+]).
+
+-ignore_xref([
+    {?MODULE, start_link, 1}
+]).
+
+-export([
+    init/1,
+    handle_call/3,
+    handle_info/2
+]).
+
+-export([
+    build_statement/2,
+    build_statement/3
+]).
+
 -compile({inline, [build_content_headers/0]}).
 
 -export_type([eneo4j_worker_config/0]).
@@ -39,10 +58,6 @@
 -type request_type() :: begin_and_commit_transaction | begin_transaction.
 -type eneo4j_call() :: discovery_api | {request_type(), statements()}.
 -type response() :: {ok, pos_integer(), map()} | {error, Reason :: any()}.
-
--export([start_link/1]).
--export([init/1, handle_call/3, handle_info/2]).
--export([build_statement/2, build_statement/3]).
 
 -spec start_link(eneo4j_worker_config()) -> start_result().
 start_link(Args) ->

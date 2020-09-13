@@ -6,6 +6,12 @@
     get_run_queries_link/1
 ]).
 
+-ignore_xref([
+    {?MODULE, is_successful, 1},
+    {?MODULE, get_commit_transaction_link, 1},
+    {?MODULE, get_run_queries_link, 1}
+]).
+
 is_successful(#{<<"errors">> := []}) -> true;
 is_successful(#{<<"errors">> := Errors}) -> {error, Errors}.
 
