@@ -41,6 +41,7 @@ is_successful_returns_true_when_no_errors_were_found_complex_response_test() ->
 is_successful_returns_error_when_errors_were_found_test() ->
     ?assertMatch({error, _}, eneo4j_reponse:is_successful(?ACTUAL_FAILURE_REPOSNSE)).
 
+-define(BEGIN_TRANSACTION_SUCCESS_LINK, "http://localhost:7470/db/neo4j/tx/397").
 -define(BEGIN_TRANSACTION_SUCCESS, #{
     <<"commit">> =>
         <<"http://localhost:7470/db/neo4j/tx/397/commit">>,
@@ -83,5 +84,13 @@ get_commit_transaction_link_returns_link_from_successfully_begin_and_commit_quer
 
 get_commit_transaction_link_returns_error_from_error_begin_query_test() ->
     ?assertMatch({error, _}, eneo4j_reponse:get_commit_transaction_link(?BEGIN_TRANSACTION_FAIL)).
+
+get_run_queries_link_return_link_on_begin_transaction_success_test() ->
+    {ok, RunLink} = eneo4j_reponse:get_run_queries_link(?BEGIN_TRANSACTION_SUCCESS),
+    ?assertEqual(?BEGIN_TRANSACTION_SUCCESS_LINK, RunLink).
+
+get_run_queries_link_return_link_on_begin_transaction_error_test() ->
+    Result = eneo4j_reponse:get_run_queries_link(?BEGIN_TRANSACTION_FAIL),
+    ?assertMatch({error, _}, Result).
 
 % eof
