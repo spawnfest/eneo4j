@@ -51,23 +51,35 @@
 
 
 <h2><a name="index">Function Index</a></h2>
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#begin_and_commit_transaction-1">begin_and_commit_transaction/1</a></td><td>   
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#begin_and_commit_transaction-1">begin_and_commit_transaction/1</a></td><td>
+   The same as begin_and_commit_transaction(Statements, 60000).</td></tr>
+<tr><td valign="top"><a href="#begin_and_commit_transaction-2">begin_and_commit_transaction/2</a></td><td>   
 Use this function to begin and commit a transaction in a single HTTP request.</td></tr>
-<tr><td valign="top"><a href="#begin_transaction-1">begin_transaction/1</a></td><td>   
+<tr><td valign="top"><a href="#begin_transaction-1">begin_transaction/1</a></td><td>
+   The same as begin_transaction(Statements, 60000).</td></tr>
+<tr><td valign="top"><a href="#begin_transaction-2">begin_transaction/2</a></td><td>   
 Use this function to begin transaction.</td></tr>
 <tr><td valign="top"><a href="#build_statement-2">build_statement/2</a></td><td>   
 This function works the same as eneo4j:build_statement(Query, Params, false).</td></tr>
 <tr><td valign="top"><a href="#build_statement-3">build_statement/3</a></td><td>
    This function allows to build a statement and include query stats.</td></tr>
-<tr><td valign="top"><a href="#commit_transaction-2">commit_transaction/2</a></td><td>   
+<tr><td valign="top"><a href="#commit_transaction-2">commit_transaction/2</a></td><td>
+   The same as commit_transaction(Statements, CommitLink, 60000).</td></tr>
+<tr><td valign="top"><a href="#commit_transaction-3">commit_transaction/3</a></td><td>   
 Use this function commit a transaction.</td></tr>
 <tr><td valign="top"><a href="#discovery_api-0">discovery_api/0</a></td><td>   
 Use this function to extract information about neo4j version, distribution, etc.</td></tr>
-<tr><td valign="top"><a href="#keep_alive_transaction-1">keep_alive_transaction/1</a></td><td>   
+<tr><td valign="top"><a href="#keep_alive_transaction-1">keep_alive_transaction/1</a></td><td>
+   The same as keep_alive_transaction(RunLink, 60000).</td></tr>
+<tr><td valign="top"><a href="#keep_alive_transaction-2">keep_alive_transaction/2</a></td><td>   
 Use this function to keep transaction alive.</td></tr>
-<tr><td valign="top"><a href="#rollback_transaction-1">rollback_transaction/1</a></td><td>   
+<tr><td valign="top"><a href="#rollback_transaction-1">rollback_transaction/1</a></td><td>
+   The same as rollback_transaction(RollbackLink, 60000).</td></tr>
+<tr><td valign="top"><a href="#rollback_transaction-2">rollback_transaction/2</a></td><td>   
 Use this function rollback a transaction.</td></tr>
-<tr><td valign="top"><a href="#run_queries_inside_transaction-2">run_queries_inside_transaction/2</a></td><td>   
+<tr><td valign="top"><a href="#run_queries_inside_transaction-2">run_queries_inside_transaction/2</a></td><td>
+   The same as run_queries_inside_transaction(Statements, RunLink, 60000).</td></tr>
+<tr><td valign="top"><a href="#run_queries_inside_transaction-3">run_queries_inside_transaction/3</a></td><td>   
 Use this function to begin transaction.</td></tr>
 </table>
 
@@ -76,6 +88,13 @@ Use this function to begin transaction.</td></tr>
 <h3 class="function"><a name="begin_and_commit_transaction-1">begin_and_commit_transaction/1</a></h3>
 <div class="spec">
 <p><tt>begin_and_commit_transaction(Statements::<a href="#type-statements">statements()</a>) -&gt; <a href="#type-query_result">query_result()</a></tt><br></p>
+<p> </p>
+</div><p>
+   The same as begin_and_commit_transaction(Statements, 60000).</p>
+
+<h3 class="function"><a name="begin_and_commit_transaction-2">begin_and_commit_transaction/2</a></h3>
+<div class="spec">
+<p><tt>begin_and_commit_transaction(Statements::<a href="#type-statements">statements()</a>, Timeout::timeout()) -&gt; <a href="#type-query_result">query_result()</a></tt><br></p>
 <p> </p>
 </div><p><p>   
 Use this function to begin and commit a transaction in a single HTTP request.</p>
@@ -91,11 +110,18 @@ Use this function to begin and commit a transaction in a single HTTP request.</p
    % Build a statement:
    Statement = eneo4j:build_statement(Query, ParamsAndy),
    Execute the query
-   {ok, Result} = eneo4j:begin_and_commit_transaction([Statement]).</pre></p>
+   {ok, Result} = eneo4j:begin_and_commit_transaction([Statement], 30000).</pre></p>
 
 <h3 class="function"><a name="begin_transaction-1">begin_transaction/1</a></h3>
 <div class="spec">
 <p><tt>begin_transaction(Statements::<a href="#type-statements">statements()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
+<p> </p>
+</div><p>
+   The same as begin_transaction(Statements, 60000).</p>
+
+<h3 class="function"><a name="begin_transaction-2">begin_transaction/2</a></h3>
+<div class="spec">
+<p><tt>begin_transaction(Statements::<a href="#type-statements">statements()</a>, Timeout::timeout()) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
 <p> </p>
 </div><p><p>   
 Use this function to begin transaction</p>
@@ -134,6 +160,13 @@ This function works the same as eneo4j:build_statement(Query, Params, false)</p>
 <div class="spec">
 <p><tt>commit_transaction(Statements::<a href="#type-statements">statements()</a>, CommitLink::<a href="eneo4j_response.html#type-commit_transaction_link">eneo4j_response:commit_transaction_link()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
 <p> </p>
+</div><p>
+   The same as commit_transaction(Statements, CommitLink, 60000).</p>
+
+<h3 class="function"><a name="commit_transaction-3">commit_transaction/3</a></h3>
+<div class="spec">
+<p><tt>commit_transaction(Statements::<a href="#type-statements">statements()</a>, CommitLink::<a href="eneo4j_response.html#type-commit_transaction_link">eneo4j_response:commit_transaction_link()</a>, Timeout::timeout()) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
+<p> </p>
 </div><p><p>   
 Use this function commit a transaction.</p>
   
@@ -157,6 +190,13 @@ Use this function to extract information about neo4j version, distribution, etc.
 <h3 class="function"><a name="keep_alive_transaction-1">keep_alive_transaction/1</a></h3>
 <div class="spec">
 <p><tt>keep_alive_transaction(RunLink::<a href="eneo4j_response.html#type-run_queries_link">eneo4j_response:run_queries_link()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
+<p> </p>
+</div><p>
+   The same as keep_alive_transaction(RunLink, 60000).</p>
+
+<h3 class="function"><a name="keep_alive_transaction-2">keep_alive_transaction/2</a></h3>
+<div class="spec">
+<p><tt>keep_alive_transaction(RunLink::<a href="eneo4j_response.html#type-run_queries_link">eneo4j_response:run_queries_link()</a>, Timeout::timeout()) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
 <p> </p>
 </div><p><p>   
 Use this function to keep transaction alive.   
@@ -186,6 +226,13 @@ It will timeout after 60 seconds (by default).</p>
 <div class="spec">
 <p><tt>rollback_transaction(RollbackLink::<a href="eneo4j_response.html#type-rollback_transaction_link">eneo4j_response:rollback_transaction_link()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
 <p> </p>
+</div><p>
+   The same as rollback_transaction(RollbackLink, 60000).</p>
+
+<h3 class="function"><a name="rollback_transaction-2">rollback_transaction/2</a></h3>
+<div class="spec">
+<p><tt>rollback_transaction(RollbackLink::<a href="eneo4j_response.html#type-rollback_transaction_link">eneo4j_response:rollback_transaction_link()</a>, Timeout::timeout()) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
+<p> </p>
 </div><p><p>   
 Use this function rollback a transaction.</p>
   
@@ -201,8 +248,15 @@ Use this function rollback a transaction.</p>
 <div class="spec">
 <p><tt>run_queries_inside_transaction(Statements::<a href="#type-statements">statements()</a>, RunLink::<a href="eneo4j_response.html#type-run_queries_link">eneo4j_response:run_queries_link()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
 <p> </p>
+</div><p>
+   The same as run_queries_inside_transaction(Statements, RunLink, 60000).</p>
+
+<h3 class="function"><a name="run_queries_inside_transaction-3">run_queries_inside_transaction/3</a></h3>
+<div class="spec">
+<p><tt>run_queries_inside_transaction(Statements::<a href="#type-statements">statements()</a>, RunLink::<a href="eneo4j_response.html#type-run_queries_link">eneo4j_response:run_queries_link()</a>, Timeout::timeout()) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
+<p> </p>
 </div><p><p>   
-Use this function to begin transaction</p>
+Use this function to begin transaction.</p>
   
    <pre>   {ok, BeginResponse} = eneo4j:begin_transaction([]),
   

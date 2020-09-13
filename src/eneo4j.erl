@@ -9,11 +9,17 @@
 -export([
     discovery_api/0,
     begin_and_commit_transaction/1,
+    begin_and_commit_transaction/2,
     begin_transaction/1,
+    begin_transaction/2,
     run_queries_inside_transaction/2,
+    run_queries_inside_transaction/3,
     keep_alive_transaction/1,
+    keep_alive_transaction/2,
     commit_transaction/2,
-    rollback_transaction/1
+    commit_transaction/3,
+    rollback_transaction/1,
+    rollback_transaction/2
 ]).
 
 -export([
@@ -24,11 +30,17 @@
 -ignore_xref([
     {?MODULE, discovery_api, 0},
     {?MODULE, begin_and_commit_transaction, 1},
+    {?MODULE, begin_and_commit_transaction, 2},
     {?MODULE, begin_transaction, 1},
+    {?MODULE, begin_transaction, 2},
     {?MODULE, run_queries_inside_transaction, 2},
+    {?MODULE, run_queries_inside_transaction, 3},
     {?MODULE, keep_alive_transaction, 1},
+    {?MODULE, keep_alive_transaction, 2},
     {?MODULE, commit_transaction, 2},
+    {?MODULE, commit_transaction, 3},
     {?MODULE, rollback_transaction, 1},
+    {?MODULE, rollback_transaction, 2},
     {?MODULE, build_statement, 2},
     {?MODULE, build_statement, 3}
 ]).
@@ -61,6 +73,12 @@ discovery_api() ->
     Response.
 
 %%% @doc
+%%% The same as begin_and_commit_transaction(Statements, 60000).
+-spec begin_and_commit_transaction(statements()) -> query_result().
+begin_and_commit_transaction(Statements) ->
+    begin_and_commit_transaction(Statements, 60000).
+
+%%% @doc
 %%% Use this function to begin and commit a transaction in a single HTTP request.
 %%%
 %%% ```
@@ -75,12 +93,18 @@ discovery_api() ->
 %%% % Build a statement:
 %%% Statement = eneo4j:build_statement(Query, ParamsAndy),
 %%% Execute the query
-%%% {ok, Result} = eneo4j:begin_and_commit_transaction([Statement]).
+%%% {ok, Result} = eneo4j:begin_and_commit_transaction([Statement], 30000).
 %%% '''
--spec begin_and_commit_transaction(statements()) -> query_result().
-begin_and_commit_transaction(Statements) ->
+-spec begin_and_commit_transaction(statements(), timeout()) -> query_result().
+begin_and_commit_transaction(Statements, Timeout) ->
     Request = {begin_and_commit_transaction, Statements},
-    call_wpool(Request).
+    call_wpool(Request, Timeout).
+
+%%% @doc
+%%% The same as begin_transaction(Statements, 60000).
+-spec begin_transaction(statements()) -> query_result_with_commit().
+begin_transaction(Statements) ->
+    begin_transaction(Statements, 60000).
 
 %%% @doc
 %%% Use this function to begin transaction
@@ -90,14 +114,21 @@ begin_and_commit_transaction(Statements) ->
 %%% Statement = eneo4j:build_statement(QueryGetPersonsNames, #{}),
 %%% {ok, Result} = eneo4j:begin_transaction([Statement]),
 %%% '''
--spec begin_transaction(statements()) -> query_result_with_commit().
-begin_transaction(Statements) ->
+-spec begin_transaction(statements(), timeout()) -> query_result_with_commit().
+begin_transaction(Statements, Timeout) ->
     Request = {begin_transaction, Statements},
-    call_wpool(Request).
+    call_wpool(Request, Timeout).
 
 %%% @doc
-%%% Use this function to begin transaction
-%%%
+%%% The same as run_queries_inside_transaction(Statements, RunLink, 60000).
+-spec run_queries_inside_transaction(statements(), eneo4j_response:run_queries_link()) ->
+    query_result_with_commit().
+run_queries_inside_transaction(Statements, RunLink) ->
+    run_queries_inside_transaction(Statements, RunLink, 60000).
+
+%%% @doc
+%%% Use this function to begin transaction.
+%%% 
 %%% ```
 %%% {ok, BeginResponse} = eneo4j:begin_transaction([]),
 %%%
@@ -111,11 +142,17 @@ begin_transaction(Statements) ->
 %%% {ok, RunLink2} = eneo4j_response:get_run_queries_link(RunResponse),
 %%% {ok, Result} = eneo4j:run_queries_inside_transaction([Statement], RunLink2),
 %%% '''
--spec run_queries_inside_transaction(statements(), eneo4j_response:run_queries_link()) ->
+-spec run_queries_inside_transaction(statements(), eneo4j_response:run_queries_link(), timeout()) ->
     query_result_with_commit().
-run_queries_inside_transaction(Statements, RunLink) ->
+run_queries_inside_transaction(Statements, RunLink, Timeout) ->
     Request = {{run_queries, RunLink}, Statements},
-    call_wpool(Request).
+    call_wpool(Request, Timeout).
+
+%%% @doc
+%%% The same as keep_alive_transaction(RunLink, 60000).
+-spec keep_alive_transaction(eneo4j_response:run_queries_link()) -> query_result_with_commit().
+keep_alive_transaction(RunLink) ->
+    keep_alive_transaction(RunLink, 60000).
 
 %%% @doc
 %%% Use this function to keep transaction alive.
@@ -142,10 +179,17 @@ run_queries_inside_transaction(Statements, RunLink) ->
 %%% {ok, RunLink2} = eneo4j_response:get_run_queries_link(RunResponse),
 %%% {ok, Result} = eneo4j:run_queries_inside_transaction([Statement], RunLink2),
 %%% '''
+-spec keep_alive_transaction(eneo4j_response:run_queries_link(), timeout()) ->
+    query_result_with_commit().
+keep_alive_transaction(RunLink, Timeout) ->
+    run_queries_inside_transaction([], RunLink, Timeout).
 
--spec keep_alive_transaction(eneo4j_response:run_queries_link()) -> query_result_with_commit().
-keep_alive_transaction(RunLink) ->
-    run_queries_inside_transaction([], RunLink).
+%%% @doc
+%%% The same as commit_transaction(Statements, CommitLink, 60000).
+-spec commit_transaction(statements(), eneo4j_response:commit_transaction_link()) ->
+    query_result_with_commit().
+commit_transaction(Statements, CommitLink) ->
+    commit_transaction(Statements, CommitLink, 60000).
 
 %%% @doc
 %%% Use this function commit a transaction.
@@ -159,11 +203,18 @@ keep_alive_transaction(RunLink) ->
 %%%  Statements = [],
 %%%  {ok, Result} = eneo4j:commit_transaction(Statements, CommitLink),
 %%% '''
--spec commit_transaction(statements(), eneo4j_response:commit_transaction_link()) ->
+-spec commit_transaction(statements(), eneo4j_response:commit_transaction_link(), timeout()) ->
     query_result_with_commit().
-commit_transaction(Statements, CommitLink) ->
+commit_transaction(Statements, CommitLink, Timeout) ->
     Request = {{commit_transaction, CommitLink}, Statements},
-    call_wpool(Request).
+    call_wpool(Request, Timeout).
+
+%%% @doc
+%%% The same as rollback_transaction(RollbackLink, 60000).
+-spec rollback_transaction(eneo4j_response:rollback_transaction_link()) ->
+    query_result_with_commit().
+rollback_transaction(RollbackLink) ->
+    rollback_transaction(RollbackLink, 60000).
 
 %%% @doc
 %%% Use this function rollback a transaction.
@@ -177,11 +228,11 @@ commit_transaction(Statements, CommitLink) ->
 %%%  Statements = [],
 %%%  {ok, Result} = eneo4j:rollback_transaction(Statements, RollbackLink),
 %%% '''
--spec rollback_transaction(eneo4j_response:rollback_transaction_link()) ->
+-spec rollback_transaction(eneo4j_response:rollback_transaction_link(), timeout()) ->
     query_result_with_commit().
-rollback_transaction(RollbackLink) ->
+rollback_transaction(RollbackLink, Timeout) ->
     Request = {rollback_transaction, RollbackLink},
-    call_wpool(Request).
+    call_wpool(Request, Timeout).
 
 %%% @doc
 %%% This function allows to build a statement and include query stats.
@@ -213,8 +264,13 @@ build_statement(Query, Params) ->
 
 % Private functions
 
-call_wpool(Request) ->
-    {ok, HttpStatusCode, Response} = wpool:call(eneo4j_workers_pool, Request, available_worker),
+call_wpool(Request, Timeout) ->
+    {ok, HttpStatusCode, Response} = wpool:call(
+        eneo4j_workers_pool,
+        Request,
+        available_worker,
+        Timeout
+    ),
     process_response(Request, HttpStatusCode, Response).
 
 process_response(
