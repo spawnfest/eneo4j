@@ -11,12 +11,10 @@
 -define(Neo4jDB, "neo4j").
 -define(Neo4jPassword, "test").
 
-suite() -> [{timetrap, {minutes, 10}}].
-
 init_per_suite(Config) ->
     % Change skip to the confing to run this benchamrk
     % then run benchmark with rebar3 ct --suite eneo4j_benchmark_SUITE
-    % [{insert_nodes, 10} | Config].
+    % [{insert_nodes, 10}, {n_times, 1000} | Config].
     {skip, "Benchmark should not be executed on normal CI"}.
 
 end_per_suite(_Config) ->
@@ -54,14 +52,8 @@ end_per_testcase(_TestCase, _Config) ->
 
 groups() ->
     [
-        {no_authentication, [parallel, shuffle], [
-            connect_5_nearest
-            | lists:duplicate(?NUMBER_OF_PARALLEL_EXECUTIONS, insert_n_nodes)
-        ]},
-        {authentication, [parallel, shuffle], [
-            connect_5_nearest
-            | lists:duplicate(?NUMBER_OF_PARALLEL_EXECUTIONS, insert_n_nodes)
-        ]}
+        {no_authentication, [parallel, shuffle], [insert_n_nodes]},
+        {authentication, [parallel, shuffle], [insert_n_nodes]}
     ].
 
 all() ->
@@ -70,10 +62,9 @@ all() ->
         {group, authentication}
     ].
 
-insert_n_nodes() -> [{timetrap, {seconds, 60}}].
-
 insert_n_nodes(Config) ->
     InsertNodes = ?config(insert_nodes, Config),
+    NTimes = ?config(n_times, Config),
     Statements = [
         begin
             Query = <<"CREATE (n:Person { name: $name })">>,
@@ -82,25 +73,15 @@ insert_n_nodes(Config) ->
         end
         || _ <- lists:seq(1, InsertNodes)
     ],
-
-    {Time, _Val} = timer:tc(fun() ->
-        eneo4j:begin_and_commit_transaction(Statements)
-    end),
-
-    ct:log("Insert ~p nodes in ~p", [InsertNodes, Time]).
-
-connect_5_nearest(_Config) ->
-    Query =
-        <<"MATCH (a:Person),(b:Person)\n"
-            "        WHERE id(a) + 5 > id(b) AND id(a) - 5 < id(b)\n"
-            "        CREATE (a)-[r:Knows]->(b)\n"
-            "        RETURN type(r)">>,
-    Statement = eneo4j:build_statement(Query, #{}),
-    {Time, _Val} = timer:tc(fun() ->
-        eneo4j:begin_and_commit_transaction([Statement])
-    end),
-
-    ct:log("Connect nodes time ~p", [Time]).
+    [
+        begin
+            {Time, _Val} = timer:tc(fun() ->
+                eneo4j:begin_and_commit_transaction(Statements)
+            end),
+            ct:log("Insert ~p nodes in ~p", [InsertNodes, Time])
+        end
+        || _ <- lists:seq(1, NTimes)
+    ].
 
 random_string() ->
     Bits = entropy_string:bits(1.0e6, 1.0e9),

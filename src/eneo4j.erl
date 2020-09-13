@@ -128,7 +128,7 @@ run_queries_inside_transaction(Statements, RunLink) ->
 
 %%% @doc
 %%% Use this function to begin transaction.
-%%% 
+%%%
 %%% ```
 %%% {ok, BeginResponse} = eneo4j:begin_transaction([]),
 %%%

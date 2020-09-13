@@ -57,6 +57,14 @@ You may alternatively put this code under a separate supervisor's init.
 
 Do not include `user` and `password` if your neo4j does not have a password configured.
 
+## Benchmark
+
+There is a simple benchmark provided to the project. To execute it go to `test/eneo4j_benchmark_SUITE.erl` and uncomment `init_per_suite/1` config. Then manually extract data results (eg using regex) and paste it to `data.csv`. The scenario is inserting 10 nodes 1000 times and checking execution query times.
+Executing this test on my laptop gives following result:
+
+
+![Benchmark result](/benchmark/BenchmarkResult.png)
+
 ## Use
 
 This section describes how to build requests and what kind of answer to expect.
