@@ -85,7 +85,8 @@ common_test_cases() ->
         when_discovering_existing_address_version_and_edition_are_returned,
         when_adding_node_transaction_is_successfully_committed_with_params,
         when_adding_node_transaction_is_successfully_committed_without_params,
-        when_unexpected_message_is_send_it_is_logged
+        when_unexpected_message_is_send_it_is_logged,
+        when_unexpected_cast_is_send_worker_does_not_crush
     ].
 
 %%--------------------------------------------------------------------
@@ -155,9 +156,12 @@ when_unexpected_cast_is_send_it_is_logged(Config) ->
     ?assertEqual("Unexpected cast unexpected cast", ?capturedOutput),
     ?assert(is_process_alive(Worker)),
     Config.
-
 -else.
-when_unexpected_cast_is_send_it_is_logged(Config) ->
+when_unexpected_cast_is_send_it_is_logged(_Config) -> ok.
+-endif.
+-endif.
+
+when_unexpected_cast_is_send_worker_does_not_crush(Config) ->
     WorkerConfig = ?config(worker_config, Config),
     {ok, Worker} = eneo4j_worker:start_link(WorkerConfig),
     gen_server:cast(Worker, "unexpected cast"),
@@ -165,6 +169,3 @@ when_unexpected_cast_is_send_it_is_logged(Config) ->
     timer:sleep(100),
     ?assert(is_process_alive(Worker)),
     Config.
-
--endif.
--endif.
