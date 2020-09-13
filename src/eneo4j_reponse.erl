@@ -9,6 +9,8 @@ is_successful(#{<<"errors">> := []}) -> true;
 is_successful(#{<<"errors">> := Errors}) -> {error, Errors}.
 
 get_commit_transaction_link(#{<<"errors">> := [], <<"commit">> := CommitLink}) ->
-    {ok, CommitLink};
+    {ok, binary:bin_to_list(CommitLink)};
+get_commit_transaction_link(#{<<"errors">> := []} = Result) ->
+    {error, {no_commit_link, Result}};
 get_commit_transaction_link(Error) ->
     Error.

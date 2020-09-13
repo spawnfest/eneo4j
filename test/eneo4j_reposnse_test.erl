@@ -41,4 +41,47 @@ is_successful_returns_true_when_no_errors_were_found_complex_response_test() ->
 is_successful_returns_error_when_errors_were_found_test() ->
     ?assertMatch({error, _}, eneo4j_reponse:is_successful(?ACTUAL_FAILURE_REPOSNSE)).
 
+-define(BEGIN_TRANSACTION_SUCCESS, #{
+    <<"commit">> =>
+        <<"http://localhost:7470/db/neo4j/tx/397/commit">>,
+    <<"errors">> => [],
+    <<"results">> => [
+        #{
+            <<"columns">> => [<<"n.name">>],
+            <<"data">> => [
+                #{<<"meta">> => [null], <<"row">> => [<<"Andy">>]},
+                #{
+                    <<"meta">> => [null],
+                    <<"row">> => [<<"Andy">>]
+                }
+            ]
+        }
+    ],
+    <<"transaction">> => #{
+        <<"expires">> =>
+            <<"Sun, 13 Sep 2020 11:17:12 GMT">>
+    }
+}).
+
+-define(BEGIN_TRANSACTION_FAIL,
+    {error, [
+        #{
+            <<"code">> => <<"Neo.ClientError.Statement.SyntaxError">>,
+            <<"message">> =>
+                <<"Invalid input 'X' (line 1, column 6 (offset: 5))\n\"MATCHXD (n:Person) RETURN n.name\"\n      ^">>
+        }
+    ]}
+).
+
+get_commit_transaction_link_returns_link_from_successfully_begin_query_test() ->
+    {ok, ContentLink} = eneo4j_reponse:get_commit_transaction_link(?BEGIN_TRANSACTION_SUCCESS),
+    ?assertMatch(#{host := "localhost"}, uri_string:parse(ContentLink)).
+
+get_commit_transaction_link_returns_link_from_successfully_begin_and_commit_query_test() ->
+    Result = eneo4j_reponse:get_commit_transaction_link(?ACTUALL_SUCCES_RESPONSE),
+    ?assertMatch({error, {no_commit_link, _}}, Result).
+
+get_commit_transaction_link_returns_error_from_error_begin_query_test() ->
+    ?assertMatch({error, _}, eneo4j_reponse:get_commit_transaction_link(?BEGIN_TRANSACTION_FAIL)).
+
 % eof
