@@ -152,11 +152,3 @@ when_unexpected_cast_is_send_it_is_logged(Config) ->
     ?assertEqual("Unexpected cast unexpected cast", ?capturedOutput),
     ?assert(is_process_alive(Worker)),
     Config.
-
-% Open -> commit
-% Open -> run_non_empty -> commit
-% Open -> run_non_empty -> run_non_empty -> commit
-
-% Open -> rollback
-% Open -> run_non_empty -> rollback
-% Open -> run_non_empty -> run_non_empty -> rollback

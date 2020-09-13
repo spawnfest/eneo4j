@@ -57,7 +57,11 @@
 
 -type statements() :: [statement()].
 -type request_type() :: begin_and_commit_transaction | begin_transaction.
--type eneo4j_call() :: discovery_api | {request_type(), statements()}.
+-type eneo4j_call() ::
+    discovery_api |
+    {request_type(), statements()} |
+    {rollback_transaction, RollbackLink :: string()}.
+
 -type response() :: {ok, pos_integer(), map()} | {error, Reason :: any()}.
 
 -spec start_link(eneo4j_worker_config()) -> start_result().
@@ -76,6 +80,9 @@ init(State = #{}) ->
     {reply, response(), eneo4j_worker_state()}.
 handle_call(discovery_api, _From, State = #{url := Url, headers := Headers}) ->
     Response = send_request_and_process_response(get, Url, Headers, <<"">>),
+    {reply, Response, State};
+handle_call({rollback_transaction, RollbackLink}, _From, State = #{headers := Headers}) ->
+    Response = send_request_and_process_response(delete, RollbackLink, Headers, <<"">>),
     {reply, Response, State};
 handle_call({RequestType, Statements}, _From, State = #{headers := Headers}) ->
     Request = build_request(Statements),

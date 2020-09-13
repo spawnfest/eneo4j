@@ -6,7 +6,8 @@
     begin_transaction/1,
     run_queries_inside_transaction/2,
     keep_alive_transaction/1,
-    commit_transaction/2
+    commit_transaction/2,
+    rollback_transaction/1
 ]).
 
 -export([
@@ -21,6 +22,7 @@
     {?MODULE, run_queries_inside_transaction, 2},
     {?MODULE, keep_alive_transaction, 1},
     {?MODULE, commit_transaction, 2},
+    {?MODULE, rollback_transaction, 1},
     {?MODULE, build_statement, 2},
     {?MODULE, build_statement, 3}
 ]).
@@ -48,6 +50,10 @@ commit_transaction(Statements, CommitLink) ->
     Request = {{commit_transaction, CommitLink}, Statements},
     call_wpool(Request).
 
+rollback_transaction(RollbackLink) ->
+    Request = {rollback_transaction, RollbackLink},
+    call_wpool(Request).
+
 build_statement(Query, Params, IncludeStats) ->
     eneo4j_worker:build_statement(Query, Params, IncludeStats).
 
@@ -57,14 +63,22 @@ build_statement(Query, Params) ->
 % Private functions
 
 call_wpool(Request) ->
-    HttpStatusCode = get_http_status(Request),
     {ok, HttpStatusCode, Response} = wpool:call(eneo4j_workers_pool, Request, available_worker),
-    process_response(Response).
+    process_response(Request, HttpStatusCode, Response).
 
-get_http_status({begin_transaction, _}) -> 201;
-get_http_status(_Request) -> 200.
-
-process_response(Response) ->
+process_response(
+    {rollback_transaction, _},
+    HttpStatusCode,
+    Response = #{<<"results">> := [], <<"errors">> := []}
+) when HttpStatusCode =/= 404 ->
+    {ok, Response};
+process_response({rollback_transaction, _}, HttpStatusCode, ErrorResponse) when
+    HttpStatusCode =/= 404
+->
+    {error, ErrorResponse};
+process_response(_, 404, Response) ->
+    {error, {transaction_not_found, Response}};
+process_response(_, _, Response) ->
     case eneo4j_reponse:is_successful(Response) of
         true -> {ok, Response};
         Error -> Error
