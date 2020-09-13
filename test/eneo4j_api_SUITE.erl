@@ -61,7 +61,8 @@ groups() ->
 tests() ->
     [
         discovery_api_returns_correct_map,
-        begin_and_commit_transaction
+        begin_and_commit_transaction,
+        when_nodes_are_create_they_are_can_be_queried
     ].
 
 discovery_api_returns_correct_map(_Config) ->
@@ -83,3 +84,35 @@ begin_and_commit_transaction(_Config) ->
         {ok, _, #{<<"errors">> := []}},
         eneo4j:begin_and_commit_transaction([Statement1, Statement2])
     ).
+
+when_nodes_are_create_they_are_can_be_queried(_Config) ->
+    % Write your query using cypher:
+    Query = <<"CREATE (n:Person { name: $name, title: $title });">>,
+
+    % Provide params if needed:
+    ParamsAndy = #{
+        <<"name">> => <<"Andy">>,
+        <<"title">> => <<"Developer">>
+    },
+
+    % Build a statement:
+    Statement = eneo4j:build_statement(Query, ParamsAndy),
+
+    %Let's build another user:
+    ParamsJohn = #{
+        <<"name">> => <<"Andy">>,
+        <<"title">> => <<"Manager">>
+    },
+
+    % We will reuse query, but you may provide a different one if you ant to.
+    Statement2 = eneo4j:build_statement(Query, ParamsJohn, true),
+
+    % Lets execute those queries:
+    {ok, 200, #{<<"errors">> := []}} = eneo4j:begin_and_commit_transaction([Statement, Statement2]),
+
+    %Lets now try getting Persons names
+    QueryGetPersonsNames = <<"MATCH (n:Person) RETURN n.name">>,
+    Statement3 = eneo4j:build_statement(QueryGetPersonsNames, #{}),
+    {ok, 200, #{<<"errors">> := [], <<"results">> := _}} = eneo4j:begin_and_commit_transaction([
+        Statement3
+    ]).
