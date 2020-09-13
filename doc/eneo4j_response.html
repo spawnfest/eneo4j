@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Module eneo4j_response</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module eneo4j_response</h1>
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#types">Data Types</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>
+   This module provides functions to extract and prepare links to run queries, commit and rollback transactions.
+
+<p><b>Authors:</b> Aleksander Lisiecki (<a href="mailto:alek.lisiecki@gmail.com"><tt>alek.lisiecki@gmail.com</tt></a>).</p>
+
+<h2><a name="description">Description</a></h2>
+   This module provides functions to extract and prepare links to run queries, commit and rollback transactions.
+<h2><a name="types">Data Types</a></h2>
+
+<h3 class="typedecl"><a name="type-commit_transaction_link">commit_transaction_link()</a></h3>
+<p><tt>commit_transaction_link() = string()</tt></p>
+
+
+<h3 class="typedecl"><a name="type-get_result_link">get_result_link()</a></h3>
+<p><tt>get_result_link(ResultLink) = {ok, ResultLink} | {error, Reason::any()}</tt></p>
+
+
+<h3 class="typedecl"><a name="type-response_with_commit">response_with_commit()</a></h3>
+<p><tt>response_with_commit() = <a href="eneo4j.html#type-response_with_commit">eneo4j:response_with_commit()</a></tt></p>
+
+
+<h3 class="typedecl"><a name="type-rollback_transaction_link">rollback_transaction_link()</a></h3>
+<p><tt>rollback_transaction_link() = string()</tt></p>
+
+
+<h3 class="typedecl"><a name="type-run_queries_link">run_queries_link()</a></h3>
+<p><tt>run_queries_link() = string()</tt></p>
+
+
+<h2><a name="index">Function Index</a></h2>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#get_commit_transaction_link-1">get_commit_transaction_link/1</a></td><td>   
+Use this function to extract commit link from previous action result.</td></tr>
+<tr><td valign="top"><a href="#get_rollback_transaction_link-1">get_rollback_transaction_link/1</a></td><td>   
+Use this function to extract rollback link from previous action result.</td></tr>
+<tr><td valign="top"><a href="#get_run_queries_link-1">get_run_queries_link/1</a></td><td>   
+Use this function to extract run queries or keep alive link from previous action result.</td></tr>
+</table>
+
+<h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="get_commit_transaction_link-1">get_commit_transaction_link/1</a></h3>
+<div class="spec">
+<p><tt>get_commit_transaction_link(Result::<a href="#type-response_with_commit">response_with_commit()</a> | {error, any()}) -&gt; <a href="#type-get_result_link">get_result_link</a>(<a href="#type-commit_transaction_link">commit_transaction_link()</a>)</tt><br></p>
+<p> </p>
+</div><p><p>   
+Use this function to extract commit link from previous action result.</p>
+  
+   <pre>   {ok, BeginResponse} = eneo4j:begin_transaction([Statement]),
+  
+   {ok, CommitLink} = eneo4j_response:get_commit_transaction_link(BeginResponse),</pre></p>
+
+<h3 class="function"><a name="get_rollback_transaction_link-1">get_rollback_transaction_link/1</a></h3>
+<div class="spec">
+<p><tt>get_rollback_transaction_link(Response::<a href="#type-response_with_commit">response_with_commit()</a>) -&gt; <a href="#type-get_result_link">get_result_link</a>(<a href="#type-rollback_transaction_link">rollback_transaction_link()</a>)</tt><br></p>
+<p> </p>
+</div><p><p>   
+Use this function to extract rollback link from previous action result.</p>
+  
+   <pre>   {ok, BeginResponse} = eneo4j:begin_transaction([Statement]),
+  
+   {ok, RollbackLink} = eneo4j_response:get_rollback_transaction_link(BeginResponse),</pre></p>
+
+<h3 class="function"><a name="get_run_queries_link-1">get_run_queries_link/1</a></h3>
+<div class="spec">
+<p><tt>get_run_queries_link(Response::<a href="#type-response_with_commit">response_with_commit()</a>) -&gt; <a href="#type-get_result_link">get_result_link</a>(<a href="#type-run_queries_link">run_queries_link()</a>)</tt><br></p>
+<p> </p>
+</div><p><p>   
+Use this function to extract run queries or keep alive link from previous action result.</p>
+  
+   <pre>   {ok, BeginResponse} = eneo4j:begin_transaction([Statement]),
+  
+   {ok, RunQueriesLink} = eneo4j_response:get_run_queries_link(BeginResponse),</pre></p>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc</i></p>
+</body>
+</html>

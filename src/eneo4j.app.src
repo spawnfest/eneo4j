@@ -1,5 +1,5 @@
 {application, eneo4j,
- [{description, "An OTP application"},
+ [{description, "An OTP application providing an API to connect to Neo4j database"},
   {vsn, "0.1.0"},
   {registered, []},
   {mod, {eneo4j_app, []}},

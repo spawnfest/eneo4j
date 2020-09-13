@@ -1,7 +1,5 @@
-%%%-------------------------------------------------------------------
-%% @doc eneo4j public API
-%% @end
-%%%-------------------------------------------------------------------
+%%% @author Aleksander Lisiecki <alek.lisiecki@gmail.com>
+%%% @hidden
 
 -module(eneo4j_app).
 

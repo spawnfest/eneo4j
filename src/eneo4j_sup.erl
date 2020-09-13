@@ -1,8 +1,7 @@
-%%%-------------------------------------------------------------------
-%% @doc eneo4j top level supervisor.
-%% @end
-%%%-------------------------------------------------------------------
-
+%%% @author Aleksander Lisiecki <alek.lisiecki@gmail.com>
+%%% @hidden
+%%% @private
+%%%
 -module(eneo4j_sup).
 
 -behaviour(supervisor).

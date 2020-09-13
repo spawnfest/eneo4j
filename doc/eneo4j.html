@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Module eneo4j</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module eneo4j</h1>
+<ul class="index"><li><a href="#types">Data Types</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>
+
+
+<h2><a name="types">Data Types</a></h2>
+
+<h3 class="typedecl"><a name="type-discovery_api_response">discovery_api_response()</a></h3>
+<p><tt>discovery_api_response() = #{binary() := binary()}</tt></p>
+
+
+<h3 class="typedecl"><a name="type-query_result">query_result()</a></h3>
+<p><tt>query_result() = {ok, <a href="#type-response">response()</a>} | {error, any()}</tt></p>
+
+
+<h3 class="typedecl"><a name="type-query_result_with_commit">query_result_with_commit()</a></h3>
+<p><tt>query_result_with_commit() = {ok, <a href="#type-response_with_commit">response_with_commit()</a>} | {error, any()}</tt></p>
+
+
+<h3 class="typedecl"><a name="type-response">response()</a></h3>
+<p><tt>response() = #{binary() := any()}</tt></p>
+
+
+<h3 class="typedecl"><a name="type-response_with_commit">response_with_commit()</a></h3>
+<p><tt>response_with_commit() = #{binary() := any()}</tt></p>
+
+
+<h3 class="typedecl"><a name="type-statement">statement()</a></h3>
+<p><tt>statement() = <a href="eneo4j_worker.html#type-statement">eneo4j_worker:statement()</a></tt></p>
+
+
+<h3 class="typedecl"><a name="type-statements">statements()</a></h3>
+<p><tt>statements() = <a href="eneo4j_worker.html#type-statements">eneo4j_worker:statements()</a></tt></p>
+
+
+<h2><a name="index">Function Index</a></h2>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#begin_and_commit_transaction-1">begin_and_commit_transaction/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#begin_transaction-1">begin_transaction/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#build_statement-2">build_statement/2</a></td><td></td></tr>
+<tr><td valign="top"><a href="#build_statement-3">build_statement/3</a></td><td></td></tr>
+<tr><td valign="top"><a href="#commit_transaction-2">commit_transaction/2</a></td><td></td></tr>
+<tr><td valign="top"><a href="#discovery_api-0">discovery_api/0</a></td><td></td></tr>
+<tr><td valign="top"><a href="#keep_alive_transaction-1">keep_alive_transaction/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#rollback_transaction-1">rollback_transaction/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#run_queries_inside_transaction-2">run_queries_inside_transaction/2</a></td><td></td></tr>
+</table>
+
+<h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="begin_and_commit_transaction-1">begin_and_commit_transaction/1</a></h3>
+<div class="spec">
+<p><tt>begin_and_commit_transaction(Statements::<a href="#type-statements">statements()</a>) -&gt; <a href="#type-query_result">query_result()</a></tt><br></p>
+<p> </p>
+</div>
+
+<h3 class="function"><a name="begin_transaction-1">begin_transaction/1</a></h3>
+<div class="spec">
+<p><tt>begin_transaction(Statements::<a href="#type-statements">statements()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
+<p> </p>
+</div>
+
+<h3 class="function"><a name="build_statement-2">build_statement/2</a></h3>
+<div class="spec">
+<p><tt>build_statement(Query::binary(), Params::#{binary() =&gt; any()}) -&gt; <a href="#type-statement">statement()</a></tt><br></p>
+<p> </p>
+</div>
+
+<h3 class="function"><a name="build_statement-3">build_statement/3</a></h3>
+<div class="spec">
+<p><tt>build_statement(Query::binary(), Params::#{binary() =&gt; any()}, IncludeStats::boolean()) -&gt; <a href="#type-statement">statement()</a></tt><br></p>
+<p> </p>
+</div>
+
+<h3 class="function"><a name="commit_transaction-2">commit_transaction/2</a></h3>
+<div class="spec">
+<p><tt>commit_transaction(Statements::<a href="#type-statements">statements()</a>, CommitLink::<a href="eneo4j_response.html#type-commit_transaction_link">eneo4j_response:commit_transaction_link()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
+<p> </p>
+</div>
+
+<h3 class="function"><a name="discovery_api-0">discovery_api/0</a></h3>
+<div class="spec">
+<p><tt>discovery_api() -&gt; <a href="#type-discovery_api_response">discovery_api_response()</a></tt><br></p>
+<p> </p>
+</div>
+
+<h3 class="function"><a name="keep_alive_transaction-1">keep_alive_transaction/1</a></h3>
+<div class="spec">
+<p><tt>keep_alive_transaction(RunLink::<a href="eneo4j_response.html#type-run_queries_link">eneo4j_response:run_queries_link()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
+<p> </p>
+</div>
+
+<h3 class="function"><a name="rollback_transaction-1">rollback_transaction/1</a></h3>
+<div class="spec">
+<p><tt>rollback_transaction(RollbackLink::<a href="eneo4j_response.html#type-rollback_transaction_link">eneo4j_response:rollback_transaction_link()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
+<p> </p>
+</div>
+
+<h3 class="function"><a name="run_queries_inside_transaction-2">run_queries_inside_transaction/2</a></h3>
+<div class="spec">
+<p><tt>run_queries_inside_transaction(Statements::<a href="#type-statements">statements()</a>, RunLink::<a href="eneo4j_response.html#type-run_queries_link">eneo4j_response:run_queries_link()</a>) -&gt; <a href="#type-query_result_with_commit">query_result_with_commit()</a></tt><br></p>
+<p> </p>
+</div>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc</i></p>
+</body>
+</html>
