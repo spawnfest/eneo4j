@@ -12,6 +12,10 @@ eneo4j
 This project is prepared during a Spawnfest competition.
 It aims to implement easy communication with neo4j database using its [HTTP API](https://neo4j.com/docs/http-api/current/introduction/). This library is written in Erlang so that it can be used from both Erlang and Elixir.
 
+### Documentation
+
+Edoc documentation is provided for this project [here](https://spawnfest.github.io/eneo4j/).
+
 ## Installation
 
 To `rebar.config` add:

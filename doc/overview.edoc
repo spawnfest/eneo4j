@@ -1,0 +1,66 @@
+@title The eneo4j application
+
+@doc
+
+===Installation===
+
+To `rebar.config' add:
+
+```erlang
+{deps, [
+    ....
+    {eneo4j, ".*", {git, "git://github.com/spawnfest/eneo4j.git", {branch, "master"}}}
+]}.
+'''
+
+===Configuration===
+
+There are 2 parameters to be configured:
+
+ - database connection object
+ - number of workers in a connection pool
+
+ To configure the eneo4j connection just put those 2 parameters in persistent term storage.
+
+In `your_project_app.erl' in `start/2' just put:
+
+```erlang
+start(_StartType, _StartArgs) ->
+    ...
+    Eneo4jWorkerConfig = #{
+        url => "http://localhost:7474",
+        db => "neo4j",
+        user => "neo4j",
+        password => "test"
+    },
+    persistent_term:put(eneo4j_worker_config, Eneo4jWorkerConfig),
+    persistent_term:put(eneo4j_workers_count, 5),
+    {ok, _} = application:ensure_all_started(eneo4j),
+    ...
+'''
+
+You may alternatively put this code under a separate supervisor's init.
+
+Do not include `user' and `password' if your neo4j does not have a password configured.
+
+
+===Use===
+
+To build and execute a transaction write your query, provide params for it and commit it to the database:
+
+```
+% Write your query using cypher:
+Query = <<"CREATE (n:Person { name: $name, title: $title });">>,
+
+% Provide params if needed:
+ParamsAndy = #{
+  <<"name">> => <<"Andy">>,
+  <<"title">> => <<"Developer">>
+  },
+
+% Build a statement:
+Statement = eneo4j:build_statement(Query, ParamsAndy),
+
+% Lets execute those queries:
+eneo4j:begin_and_commit_transaction([Statement]).
+'''
