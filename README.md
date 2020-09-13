@@ -253,6 +253,14 @@ When you have a transaction opened successfully result or run query result, you 
 
 ### [Rollback](https://neo4j.com/docs/http-api/current/actions/rollback-an-open-transaction/) an open transaction
 
-WIP
 
-<!-- EOF -->
+```erlang
+% Let's assume you have a list of statements under Statements variable
+{ok, BeginResponse} = eneo4j:begin_transaction(Statements),
+
+% But you decided that you do not want to commit those changes but rather rollback therm
+% Then using BeginResponse you get a RollbackLink
+{ok, RollbackLink} = eneo4j_reponse:get_rollback_transaction_link(BeginResponse),
+% And you use that link to rollback the transaction
+{ok, _} = eneo4j:rollback_transaction(RollbackLink).
+```
